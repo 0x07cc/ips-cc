@@ -3,10 +3,7 @@ Un programma che ha lo scopo di bloccare l'uscita di pacchetti TCP contenenti un
 Fa uso di iptables, disponibili a partire dal Kernel Linux 2.4.  
 
 
-#### ARCH
-
-## Quick Start (Italiano) 
-Installazione (su Arch per ora):
+## Arch Linux: Quick Start (Italiano) 
 1. Assicurarsi di avere Python > 3.7
 1. Installare gli strumenti per compilare: `sudo pacman -S base-devel`
 1. Installare git: `sudo pacman -S git`
@@ -18,8 +15,7 @@ Installazione (su Arch per ora):
 1. Inserire la regola per iptables: `sudo iptables -A OUTPUT -j NFQUEUE --queue-num 33 -p tcp --sport 2222`, dove 2222 è la porta su cui è in ascolto un applicativo server da proteggere
 1. Avviare lo script come utente root: `sudo ./main.py`  
 
-## Quick Start (English)
-Installing on Arch:
+## Arch Linux:  Quick Start (English)
 1. Make sure to have Python > 3.7
 1. Install compile tools: `sudo pacman -S base-devel`
 1. Install git: `sudo pacman -S git`
@@ -32,10 +28,7 @@ Installing on Arch:
 1. Start the script as root: `sudo ./main.py`  
 
 
-#### DEBIAN
-
-## Quick Start (Italiano) 
-Installazione (su Arch per ora):
+## Debian: Quick Start (Italiano) 
 1. Assicurarsi di avere Python > 3.7
 1. Installare gli strumenti per compilare: `sudo apt install build-essential`
 1. Installare git: `sudo apt install git`
@@ -47,8 +40,7 @@ Installazione (su Arch per ora):
 1. Inserire la regola per iptables: `sudo iptables -A OUTPUT -j NFQUEUE --queue-num 33 -p tcp --sport 2222`, dove 2222 è la porta su cui è in ascolto un applicativo server da proteggere
 1. Avviare lo script come utente root: `sudo ./main.py`  
 
-## Quick Start (English)
-Installing on Arch:
+## Debian: Quick Start (English)
 1. Make sure to have Python > 3.7
 1. Install compile tools: `sudo apt install build-essential`
 1. Install git: `sudo apt install git`
