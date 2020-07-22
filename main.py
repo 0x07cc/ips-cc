@@ -7,7 +7,7 @@ import my_logging as mylog
 
 # Parametri
 numero_queue = 33
-regexp_compilata = re.compile(b'CC{\w+}')
+regexp_compilata = re.compile(b'CC{\w+}') 
 
 # Funzione che analizza un pacchetto ricevuto
 # dalla coda. Dopo aver verificato che il
@@ -20,9 +20,11 @@ regexp_compilata = re.compile(b'CC{\w+}')
 # fornita, decide se lasciar passare il
 # pacchetto o rifiutarlo.
 def gestisci_pacchetto(pkt):
-	print('-------------')
+	log.nt_uplog('-------------')
 	payload = pkt.get_payload()
 	payload_hex = payload.hex()
+
+	log.uplog('Server netcat sent: '+ payload[52:-1].decode('ascii')) #stampa quello che scrivi su netcat, utile per debugging
 	
 	# Verifica della versione di IP del pacchetto:
 	# Se non e' 4, non effettuo controlli
@@ -37,23 +39,23 @@ def gestisci_pacchetto(pkt):
 
 	portaSource = payload[inizioTCP:inizioTCP+2].hex()
 	portaSourceint = int(portaSource, 16)
-	print("porta source: " + str(portaSourceint))
+	log.uplog("porta source: " + str(portaSourceint))
 	
 	portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
 	portaDestint = int(portaDest, 16)
-	print("porta destinazione: " + str(portaDestint))
+	log.uplog("porta destinazione: " + str(portaDestint))
 	
 	# TODO: verificare se SYN e' settato, in tal caso -> accept()
-	print(pkt)
+	log.uplog(pkt)
 	#print(payload_hex)
-	print(payload)
-	print('-------------')
+	log.uplog(payload)
+	log.nt_uplog('-------------')
 	
 	# Ricerca dell'espressione regolare
 	match = regexp_compilata.search(payload)
 	if match:
 		pkt.drop()
-		print("Pacchetto droppato")
+		log.uplog("Pacchetto droppato")
 	else:
 		pkt.accept()
 
