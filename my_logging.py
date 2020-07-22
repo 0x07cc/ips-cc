@@ -15,12 +15,14 @@ class Log:
 
     
     def uplog(self, s):
+        s = str(s)
         now = datetime.now()
         ts = now.strftime("%d/%m/%Y %H:%M:%S")      #time string
         print("["+ts+"]: "+ s +"\n")
         self.logfile.write("["+ts+"]: "+ s +"\n")
 
     def rt_uplog(self, s):
+        s = str(s)
         rts = "[%.3f]: " + s +"\n"                  #relative time string
         print(rts % (time.time()-self.time_start)) 
         self.logfile.write(rts % (time.time()-self.time_start))
