@@ -1,5 +1,6 @@
 # Tools module
 import os
+import subprocess
 
 # Funzione che calcola la lunghezza del pacchetto IPv4
 # basandosi sul valore IHL (Internet Header Length).
@@ -18,3 +19,10 @@ def is_root():
     if os.geteuid() != 0:
         return False
     return True
+
+# Funzione che ritorna la stringa
+# contenente l'output del comando
+# 'iptables -L'
+def list_iptables():
+    process = subprocess.run(["iptables", "-L", stdout=subprocess.PIPE, timeout=5)
+    return str(process.stdout)
