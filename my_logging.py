@@ -21,11 +21,16 @@ class Log:
         print("["+ts+"]: "+ s +"\n")
         self.logfile.write("["+ts+"]: "+ s +"\n")
 
-    def rt_uplog(self, s):
+    def rt_uplog(self, s): #relative time uplog
         s = str(s)
         rts = "[%.3f]: " + s +"\n"                  #relative time string
         print(rts % (time.time()-self.time_start)) 
         self.logfile.write(rts % (time.time()-self.time_start))
+
+    def nt_uplog(self,s): #no time uplog
+        s = str(s)
+        print(s)
+        self.logfile.write(s +"\n")
 
     def endlog(self):
         now = datetime.now()
