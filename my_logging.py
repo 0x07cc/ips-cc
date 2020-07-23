@@ -14,9 +14,19 @@ class Log:
         if (time_start == None):
             time_start = time.time()
         self.time_start = time_start
-        self.logfile = open(logfile,"a") # TODO: aggiungere Try
+        
         now = datetime.now()
-        self.logfile.write("["+now.strftime("%d/%m/%Y %H:%M:%S")+"]: Starting Log session\n")
+        ts = now.strftime("%d/%m/%Y %H:%M:%S") # Time String
+        
+        # Prova ad aprire il file di logging.
+        # Se non riesce stampa un errore.
+        try:
+            self.logfile = open(logfile,"a")
+        except:
+            print("[" + ts + "]: Error while opening logfile.")
+            #TODO: meglio uscire se non riesce?
+        
+        self.logfile.write("[" + ts + "]: Starting Log session\n")
 
     # Funzione di Update Log (Aggiornamento Log):
     # Stampa a video e nel file la stringa
@@ -28,7 +38,7 @@ class Log:
         now = datetime.now()
         ts = now.strftime("%d/%m/%Y %H:%M:%S")  # time string
         print("[" + ts + "]: " + s + "\n")
-        self.logfile.write("["+ts+"]: "+ s +"\n")
+        self.logfile.write("[" + ts + "]: "+ s +"\n")
 
     # Funzione di Relative Time Update Log:
     # Stampa a video e nel file la stringa

@@ -9,7 +9,6 @@ import utils
 numero_queue = 33
 regexp_compilata = re.compile(b'CC{\w+}') 
 logfile = "logfile.log"
-debug = utils.is_debug()
 
 # Funzione che analizza un pacchetto ricevuto
 # dalla coda. Dopo aver verificato che il
@@ -63,6 +62,11 @@ def gestisci_pacchetto(pkt):
 	else:
 		pkt.accept()
 
+# Verifica se il programma e' stato
+# avviato con il flag di debug
+debug = utils.is_debug()
+
+# Creazione oggetto di classe Log
 log = mylog.Log(logfile)
 
 # Verifica che l'utente sia root
@@ -73,6 +77,9 @@ if not utils.is_root():
 
 log.uplog("Starting ips-cc")
 
+if debug:
+    log.uplog("Debug mode detected, printing iptables -L")
+    log.uplog(utils.list_iptables())
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()

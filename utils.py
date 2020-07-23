@@ -25,8 +25,8 @@ def is_root():
 # contenente l'output del comando
 # 'iptables -L'
 def list_iptables():
-    process = subprocess.run(["iptables", "-L"], stdout=subprocess.PIPE, timeout=5, capture_output=True)
-    return str(process.stdout)
+    process = subprocess.run(["iptables", "-L"], stdout=subprocess.PIPE, timeout=5)
+    return process.stdout.decode()
 
 # Funzione che ritorna True se il programma e'
 # stato avviato passando l'argoment -d o --debug
@@ -35,3 +35,4 @@ def is_debug():
         if "-d" in sys.argv or "--debug" in sys.argv:
             return True
     return False
+
