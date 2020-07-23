@@ -3,11 +3,12 @@ from netfilterqueue import NetfilterQueue
 import re #TODO: si puo' importare meno?
 import time
 import my_logging as mylog
-
+import utils
 
 # Parametri
 numero_queue = 33
 regexp_compilata = re.compile(b'CC{\w+}') 
+logfile = "logfile.log"
 
 # Funzione che analizza un pacchetto ricevuto
 # dalla coda. Dopo aver verificato che il
@@ -59,24 +60,18 @@ def gestisci_pacchetto(pkt):
 	else:
 		pkt.accept()
 
-# Funzione che calcola la lunghezza del pacchetto IPv4
-# basandosi sul valore IHL (Internet Header Length).
-#
-# Documentazione di riferimento:
-# https://en.wikipedia.org/wiki/IPv4#IHL
-def calcola_lunghezza_ipv4(carattere):
-	lunghezza = 20
-	ihl = int(carattere, 16)
-	lunghezza = (ihl*32)//8
-	return lunghezza
+log = mylog.Log(logfile)
+log.uplog("ips-cc avviato")
 
+# Verifica che l'utente sia root
+if not is_root():
+    log.uplog("L'applicazione ha bisogno dei permessi di root!")
+    log.endlog()
+    exit()
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
 nfqueue.bind(numero_queue, gestisci_pacchetto)
-
-log = mylog.Log(time.time())
-log.uplog("ips-cc avviato")
 
 try:
 	nfqueue.run()
