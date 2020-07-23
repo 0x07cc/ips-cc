@@ -1,4 +1,4 @@
-# Modulo di Utilita' per IP
+# Tools module
 import os
 
 # Funzione che calcola la lunghezza del pacchetto IPv4

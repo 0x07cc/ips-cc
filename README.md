@@ -6,7 +6,7 @@ Fa uso di iptables, disponibili a partire dal Kernel Linux 2.4.
 #### ARCH
 
 ## Quick Start (Italiano) 
-Installazione (su Arch per ora):
+Installazione su Arch:
 1. Assicurarsi di avere Python > 3.7
 1. Installare gli strumenti per compilare: `sudo pacman -S base-devel`
 1. Installare git: `sudo pacman -S git`

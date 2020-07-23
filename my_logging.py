@@ -1,4 +1,4 @@
-# Modulo di Logging
+# Logging module
 import time
 from datetime import datetime
 

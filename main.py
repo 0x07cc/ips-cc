@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from netfilterqueue import NetfilterQueue
 import re #TODO: si puo' importare meno?
-import time
 import my_logging as mylog
 import utils
 
@@ -61,13 +60,15 @@ def gestisci_pacchetto(pkt):
 		pkt.accept()
 
 log = mylog.Log(logfile)
-log.uplog("ips-cc avviato")
 
 # Verifica che l'utente sia root
 if not utils.is_root():
-    log.uplog("L'applicazione ha bisogno dei permessi di root!")
+    log.uplog("You need root privileges to run this application")
     log.endlog()
     exit()
+
+log.uplog("Starting ips-cc")
+
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
@@ -79,5 +80,5 @@ except KeyboardInterrupt:
 	print('')
 
 nfqueue.unbind()
-log.uplog("ips-cc terminato")
+log.uplog("Stopping ips-cc")
 log.endlog()
