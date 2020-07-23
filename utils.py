@@ -1,6 +1,7 @@
 # Tools module
 import os
 import subprocess
+import sys
 
 # Funzione che calcola la lunghezza del pacchetto IPv4
 # basandosi sul valore IHL (Internet Header Length).
@@ -26,3 +27,11 @@ def is_root():
 def list_iptables():
     process = subprocess.run(["iptables", "-L"], stdout=subprocess.PIPE, timeout=5, capture_output=True)
     return str(process.stdout)
+
+# Funzione che ritorna True se il programma e'
+# stato avviato passando l'argoment -d o --debug
+def is_debug():
+    if len(sys.argv) > 1:
+        if sys.argv.get("-d") is not None or sys.argv.get("--debug") is not None:
+            return True
+    return False
