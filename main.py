@@ -64,7 +64,7 @@ log = mylog.Log(logfile)
 log.uplog("ips-cc avviato")
 
 # Verifica che l'utente sia root
-if not is_root():
+if not utils.is_root():
     log.uplog("L'applicazione ha bisogno dei permessi di root!")
     log.endlog()
     exit()
