@@ -32,6 +32,6 @@ def list_iptables():
 # stato avviato passando l'argoment -d o --debug
 def is_debug():
     if len(sys.argv) > 1:
-        if sys.argv.get("-d") is not None or sys.argv.get("--debug") is not None:
+        if "-d" in sys.argv or "--debug" in sys.argv:
             return True
     return False
