@@ -21,36 +21,38 @@ logfile = "logfile.log"
 # fornita, decide se lasciar passare il
 # pacchetto o rifiutarlo.
 def gestisci_pacchetto(pkt):
-	log.nt_uplog('-------------')
 	payload = pkt.get_payload()
 	payload_hex = payload.hex()
-
-	log.uplog('Server netcat sent: '+ payload[52:-1].decode('ascii')) #stampa quello che scrivi su netcat, utile per debugging
+	
+	if debug:
+		log.nt_uplog('-------------')
+		try:
+			log.uplog('Data received: '+ payload[52:-1].decode('ascii'))
+		except UnicodeDecodeError:
+			log.uplog("Can't decode received data")
 	
 	# Verifica della versione di IP del pacchetto:
 	# Se non e' 4, non effettuo controlli
 	# e lo accetto.
 	versioneIP = payload_hex[0]
 	if versioneIP != '4':
-		print("Received a non-IPv4 packet, accepting it")
+		print("Received a non-IPv4 packet, accepting it") # Why not log.uplog?
 		pkt.accept()
 		return
 
 	inizioTCP = utils.calcola_lunghezza_ipv4(payload_hex[1])
-
-	portaSource = payload[inizioTCP:inizioTCP+2].hex()
-	portaSourceint = int(portaSource, 16)
-	log.uplog("Source Port: " + str(portaSourceint))
-	
-	portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
-	portaDestint = int(portaDest, 16)
-	log.uplog("Destination Port: " + str(portaDestint))
-	
 	# TODO: verificare se SYN e' settato, in tal caso -> accept()
-	log.uplog(pkt)
-	#print(payload_hex)
-	log.uplog(payload)
-	log.nt_uplog('-------------')
+	
+	if debug:
+		portaSource = payload[inizioTCP:inizioTCP+2].hex()
+		portaSourceint = int(portaSource, 16)
+		portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
+		portaDestint = int(portaDest, 16)
+		log.uplog("Source port: " + str(portaSourceint) + " Destination Port: " + str(portaDestint))
+		log.uplog(pkt)
+		#print(payload_hex)
+		log.uplog(payload)
+		log.nt_uplog('-------------')
 	
 	# Ricerca dell'espressione regolare
 	match = regexp_compilata.search(payload)
@@ -60,6 +62,11 @@ def gestisci_pacchetto(pkt):
 	else:
 		pkt.accept()
 
+# Verifica se il programma e' stato
+# avviato con il flag di debug
+debug = utils.is_debug()
+
+# Creazione oggetto di classe Log
 log = mylog.Log(logfile)
 
 # Verifica che l'utente sia root
@@ -70,6 +77,9 @@ if not utils.is_root():
 
 log.uplog("Starting ips-cc")
 
+if debug:
+    log.uplog("Debug mode detected, printing iptables -L")
+    log.uplog(utils.list_iptables())
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
