@@ -30,7 +30,7 @@ def gestisci_pacchetto(pkt):
 		try:
 			log.uplog('Data received: '+ payload[52:-1].decode('ascii'))
 		except UnicodeDecodeError:
-            log.uplog("Can't decode received data")
+			log.uplog("Can't decode received data")
 	
 	# Verifica della versione di IP del pacchetto:
 	# Se non e' 4, non effettuo controlli
@@ -50,7 +50,6 @@ def gestisci_pacchetto(pkt):
 		portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
 		portaDestint = int(portaDest, 16)
 		log.uplog("Source port: " + str(portaSourceint) + " Destination Port: " + str(portaDestint))
-	
 		log.uplog(pkt)
 		#print(payload_hex)
 		log.uplog(payload)
