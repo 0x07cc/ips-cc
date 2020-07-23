@@ -3,7 +3,7 @@ from netfilterqueue import NetfilterQueue
 import re #TODO: si puo' importare meno?
 import my_logging as mylog
 import utils
-import packet_handling
+#import packet_handling
 
 # Parametri
 numero_queue = 33
@@ -73,7 +73,7 @@ log.uplog("Starting ips-cc")
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
-nfqueue.bind(numero_queue, packet_handling.gestisci_pacchetto)
+nfqueue.bind(numero_queue, gestisci_pacchetto)
 
 try:
 	nfqueue.run()
