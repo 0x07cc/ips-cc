@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 from netfilterqueue import NetfilterQueue
-import re #TODO: si puo' importare meno?
 import my_logging as mylog
+import my_analysis
 import utils
 #import packet_handling
 
 # Parametri
 numero_queue = 33
-regexp_compilata = re.compile(b'CC{\w+}') 
 logfile = "logfile.log"
+regex_list = ['CC{\w+}','CCIT{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ']  # Lista di regex e stringhe bannate
+service_type = 'Netcat' # Tipo di servizio, per ora è rappresentato dal nome
 
 # Funzione che analizza un pacchetto ricevuto
 # dalla coda. Dopo aver verificato che il
@@ -36,7 +37,7 @@ def gestisci_pacchetto(pkt):
 	# e lo accetto.
 	versioneIP = payload_hex[0]
 	if versioneIP != '4':
-		print("Received a non-IPv4 packet, accepting it") # Why not log.uplog?
+		log.uplog("Received a non-IPv4 packet, accepting it") # Why not log.uplog?
 		pkt.accept()
 		return
 
@@ -55,7 +56,7 @@ def gestisci_pacchetto(pkt):
 		log.nt_uplog('-------------')
 	
 	# Ricerca dell'espressione regolare
-	match = regexp_compilata.search(payload)
+	match = shield.is_droppable(payload)
 	if match:
 		pkt.drop()
 		log.uplog("Packet dropped")
@@ -69,6 +70,9 @@ debug = utils.is_debug()
 # Creazione oggetto di classe Log
 log = mylog.Log(logfile)
 
+# Creazione oggetto di classe Shield 
+shield = my_analysis.Shield(regex_list, service_type, log)
+
 # Verifica che l'utente sia root
 if not utils.is_root():
 	log.uplog("You need root privileges to run this application")
@@ -79,7 +83,7 @@ log.uplog("Starting ips-cc")
 
 if debug:
     log.uplog("Debug mode detected, printing iptables -L")
-    log.uplog(utils.list_iptables())
+    log.uplog(utils.list_iptables()) 
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
