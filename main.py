@@ -45,6 +45,9 @@ def gestisci_pacchetto(pkt):
 	# TODO: verificare se SYN e' settato, in tal caso -> accept()
 
 	if debug:
+		ipSource = payload_hex[24:32]
+		ipDest = payload_hex[32:40]
+		log.uplog("Source IPv4: " + utils.calcolaIPv4(ipSource)+ "  Destination IPv4: " + utils.calcolaIPv4(ipDest))
 		portaSource = payload[inizioTCP:inizioTCP+2].hex()
 		portaSourceint = int(portaSource, 16)
 		portaDest = payload[inizioTCP+2:inizioTCP+4].hex()

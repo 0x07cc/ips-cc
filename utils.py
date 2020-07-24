@@ -14,6 +14,15 @@ def calcola_lunghezza_ipv4(carattere):
     lunghezza = (ihl*32)//8
     return lunghezza
 
+# Funzione che ritorna la stringa dell'indirizzo IPv4
+# basandosi sulla stringa esadecimale passatagli.
+def calcolaIPv4(stringa_hex):
+    primo = int(stringa_hex[0:2], 16)
+    secondo = int(stringa_hex[2:4], 16)
+    terzo = int(stringa_hex[4:6], 16)
+    quarto = int(stringa_hex[6:8], 16)
+    return '%d.%d.%d.%d' % (primo, secondo, terzo, quarto)
+
 # Funzione che controlla se l'utente
 # che ha avviato lo script e' root.
 def is_root():
