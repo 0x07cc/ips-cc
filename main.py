@@ -28,7 +28,7 @@ def gestisci_pacchetto(pkt):
 	if debug:
 		log.nt_uplog('-------------')
 		try:
-			log.uplog('Data received: '+ payload[52:-1].decode('ascii'))
+			log.uplog('Data received: '+ payload[52:-1].decode('utf-8'))
 		except UnicodeDecodeError:
 			log.uplog("Can't decode received data")
 
