@@ -58,6 +58,7 @@ def gestisci_pacchetto(pkt):
 		log.uplog(payload)
 		log.nt_uplog('-------------')
 
+
 	# Ricerca dell'espressione regolare
 	match = shield.is_droppable(payload)
 	if match:

@@ -10,7 +10,7 @@ class Log:
     # passato, ha inizio da time.time().
     # Apre il file passatogli tramite parametro
     # e vi appende una linea iniziale.
-    def __init__(self, logfile="logfile.log", time_start=time.time()):
+    def __init__(self, logfile="logfile.log", time_start=time.time(), erase_old_logfile=False, debug_mode=False):
         if (time_start == None):
             time_start = time.time()
         self.time_start = time_start
@@ -21,12 +21,16 @@ class Log:
         # Prova ad aprire il file di logging.
         # Se non riesce stampa un errore.
         try:
-            self.logfile = open(logfile,"a")
+            if erase_old_logfile:
+                self.logfile = open(logfile,"w")
+            else:  
+                self.logfile = open(logfile,"a")
         except:
             print("[" + ts + "]: Error while opening logfile.")
             #TODO: meglio uscire se non riesce?
         
         self.logfile.write("[" + ts + "]: Starting Log session\n\n")
+        self.debug_mode = debug_mode
 
     # Funzione di Update Log (Aggiornamento Log):
     # Stampa a video e nel file la stringa
@@ -78,6 +82,19 @@ class Log:
         now = datetime.now()
         ts = now.strftime("%d/%m/%Y %H:%M:%S")  
         self.logfile.write("["+ts+"]: "+ s +"\n"*new_line)
+
+    '''# TODO: general purpose log function
+    def log(self, s, new_line=1, time_mode=0):
+        if (time_mode==0):
+            if self.debug_mode:
+                uplog(self, s, new_line)
+            else:
+                of_uplog(self, s, new_line) # No, metter una funzione che logga solo i pacchetti droppati
+        elif (time_mode==1):
+
+    '''
+
+
 
     # Funzione di chiusura logging:
     # Appende nel file una linea di
