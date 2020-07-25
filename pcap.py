@@ -57,7 +57,7 @@ class PCAP:
     # Funzione che aggiunge un record al file PCAP.
     # Richiede in ingresso una stringa contenente
     # un pacchetto IP (In genere inizia con '450000')
-    def make_packet_record(IP_packet):
+    def make_packet_record(self, IP_packet):
         # Seconds and microseconds
         time_hex = hex(int(time.time()))[2:10] # Seconds from epoch
         time_1= time_hex[0:2]
