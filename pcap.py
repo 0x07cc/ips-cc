@@ -20,7 +20,7 @@ class PCAP:
             exit()
 
         self.header = self.make_header()
-        self.outputFile.write(header)
+        self.outputFile.write(self.header)
 
     # Funzione che ritorna bytes dell'header PCAP.
     # length e' un parametro al momento non
