@@ -12,7 +12,7 @@ class PCAP:
     # stringa contenente il nome del file di output.
     def __init__(self, log, filename="dropped_packets.pcap"):
         self.log = log
-        log.uplog("Starting PCAP exporting module")
+        log.uplog("Starting PCAP exporting Module")
 
         try:
             self.outputFile = open(filename,"wb")
