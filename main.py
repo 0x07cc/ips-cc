@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+'''
+ ips-cc main script.
+ Launch it witch "sudo ./main.py".
+'''
 from netfilterqueue import NetfilterQueue
 import my_logging as mylog
 import my_analysis
@@ -19,8 +23,7 @@ if not utils.is_root():
     print("You need root privileges to run this application!")
     exit()
 
-# Verifica se il programma e' stato
-# avviato con il flag di debug
+# Verifica se il programma e' stato avviato con il flag di debug
 debug = utils.is_debug()
 
 # Creazione oggetti di classe Log, Shield, PCAP e PacketHandling

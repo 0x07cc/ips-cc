@@ -26,8 +26,7 @@ class PCAP:
         self.outputFile.flush()
         os.fsync(self.outputFile.fileno())
 
-    # Funzione distruttore dell'oggetto:
-    # chiude il file di output.
+    # Funzione distruttore dell'oggetto: chiude il file di output.
     def __del__(self):
         self.outputFile.close()
 
@@ -84,5 +83,3 @@ class PCAP:
         # Flush is used to confirm the writing to the file.
         self.outputFile.flush()
         os.fsync(self.outputFile.fileno())
-
-#make_pcap('4500003c7b8d4000400633c7c0a80063041fc63dd6b00050eecf76d900000000a002faf0a4300000020405b40402080a9a7a46520000000001030307')

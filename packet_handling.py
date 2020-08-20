@@ -2,6 +2,7 @@
 import utils
 
 class PacketHandling:
+
     # Funzione costruttore dell'oggetto.
     # Prende in input un oggetto di classe Log,
     # un oggetto di classe Shield, un oggetto
@@ -41,6 +42,8 @@ class PacketHandling:
             return
 
         # TODO: verificare se SYN e' settato, in tal caso -> accept()
+        # Verificare prima se si puo' trasmettere dati anche col flag
+        # SYN, altrimenti si crea una vulnerabilita'.
 
         # Se il debug e' abilitato, scrive il pacchetto
         # nel file pcap, stampa a video gli indirizzi
@@ -59,18 +62,23 @@ class PacketHandling:
             try:
                 ipSource = payload_hex[24:32]
                 ipDest = payload_hex[32:40]
-                self.log.uplog("Source IPv4: " + utils.calcolaIPv4(ipSource) + "  Destination IPv4: " + utils.calcolaIPv4(ipDest))
+                self.log.uplog("Source IPv4: " + utils.calcolaIPv4(ipSource) +
+                               "  Destination IPv4: " + utils.calcolaIPv4(ipDest))
                 portaSource = payload[inizioTCP:inizioTCP+2].hex()
                 portaSourceint = int(portaSource, 16)
                 portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
                 portaDestint = int(portaDest, 16)
-                self.log.uplog("Source port: " + str(portaSourceint) + "  Destination Port: " + str(portaDestint))
+                self.log.uplog("Source port: " + str(portaSourceint) +
+                               "  Destination Port: " + str(portaDestint))
             except:
                 self.log.uplog("Debug: Error while decoding IPv4 or port")
 
             # TCP Data
             try:
-                self.log.uplog('Data received: ' + payload[52:-1].decode('utf-8')) # cos'era 52?
+                self.log.uplog('Data received: ' + payload[52:-1].decode('utf-8'))
+                # TODO: Va usato il data offset dell'header TCP.
+                # Non e' sempre lungo 52 Bytes!
+                # Vedere Drive per l'implementazione
             except UnicodeDecodeError:
                 self.log.uplog("Can't decode received data")
 

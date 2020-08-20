@@ -14,31 +14,30 @@ class Log:
         if (time_start == None):
             time_start = time.time()
         self.time_start = time_start
-        
+
         now = datetime.now()
         ts = now.strftime("%d/%m/%Y %H:%M:%S") # Time String
-        
+
         # Prova ad aprire il file di logging.
         # Se non riesce stampa un errore.
         try:
             if erase_old_logfile:
                 self.logfile = open(logfile,"w")
-            else:  
+            else:
                 self.logfile = open(logfile,"a")
         except:
             print("[" + ts + "]: Error while opening logfile.")
             #TODO: meglio uscire se non riesce?
-        
+
         self.logfile.write("[" + ts + "]: Starting Log session\n\n")
         self.debug_mode = debug_mode
 
     # Funzione di Update Log (Aggiornamento Log):
     # Stampa a video e nel file la stringa
     # passatagli via parametro preceduta da
-    # una time string basata sul tempo reale
-    # (datetime.now)
-    # new_line descrive il numero di \n da concatenare alla stringa in input
-    # (default 1)
+    # una time string basata sul tempo reale (datetime.now).
+    # new_line descrive il numero di \n da concatenare
+    #alla stringa in input (default 1).
     def uplog(self, s, new_line=1):
         s = str(s)
         now = datetime.now()
@@ -51,20 +50,20 @@ class Log:
     # passatagli via parametro preceduta da
     # una time string basata sul tempo
     # relativo dall'avvio del logging.
-    # new_line descrive il numero di \n da concatenare alla stringa in input
-    # (default 1)
+    # new_line descrive il numero di \n da concatenare
+    #alla stringa in input (default 1).
     def rt_uplog(self, s, new_line=1): #relative time uplog
         s = str(s)
         rts = "[%.3f]: " + s + "\n"*new_line             # relative time string
-        print(rts % (time.time() - self.time_start)) 
+        print(rts % (time.time() - self.time_start))
         self.logfile.write(rts % (time.time() - self.time_start))
 
     # Funzione di No Time Update Log:
     # Stampa a video e nel file la stringa
     # passatagli via parametro, senza
     # indicazioni sul tempo.
-    # new_line descrive il numero di \n da concatenare alla stringa in input
-    # (default 1)
+    # new_line descrive il numero di \n da concatenare
+    # alla stringa in input (default 1).
     def nt_uplog(self,s,new_line=1): #no time uplog
         s = str(s)
         print(s+'\n'*(new_line-1))
@@ -75,8 +74,8 @@ class Log:
     # passatagli via parametro preceduta da
     # una time string basata sul tempo reale
     # (datetime.now)
-    # new_line descrive il numero di \n da concatenare alla stringa in input
-    # (default 1)
+    # new_line descrive il numero di \n da concatenare
+    #alla stringa in input (default 1).
     def of_uplog(self, s, new_line=1):
         s = str(s)
         now = datetime.now()
@@ -94,14 +93,11 @@ class Log:
 
     '''
 
-
-
     # Funzione di chiusura logging:
-    # Appende nel file una linea di
-    # terminazione e lo chiude.
+    # Appende nel file una linea di terminazione e lo chiude.
     def endlog(self):
         now = datetime.now()
-        ts = now.strftime("%d/%m/%Y %H:%M:%S")      
+        ts = now.strftime("%d/%m/%Y %H:%M:%S")
         self.logfile.write("[" + ts + "]: Log session has been stopped")
         self.logfile.write("\n\n\n\n\n")
         self.logfile.close()
