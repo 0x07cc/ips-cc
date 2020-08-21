@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 '''
  ips-cc main script.
- Launch it witch "sudo ./main.py".
+ Edit parameters, append the iptables rule, then launch it
+ with "sudo ./main.py" or "sudo ./main.py -d" for debug mode.
+ This script will block any packet with the Data field matching
+ at least one of the regular expressions in regex_list.
+ In debug mode every packet will be printed on screen and saved in pcap file.
 '''
 from netfilterqueue import NetfilterQueue
 import my_logging as mylog
@@ -10,7 +14,7 @@ import utils
 import packet_handling
 import pcap
 
-# Parametri
+# Parameters
 numero_queue = 33
 logfile = "logfile.log"
 pcapfile= "dropped_packets.pcap"
