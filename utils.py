@@ -31,7 +31,7 @@ def is_root():
 
 # Funzione che ritorna la stringa contenente l'output del comando 'iptables -L'
 def list_iptables():
-    process = subprocess.run(["iptables", "-L"], stdout=subprocess.PIPE, timeout=5)
+    process = subprocess.run(["iptables", "-L", "-n"], stdout=subprocess.PIPE, timeout=5)
     return process.stdout.decode()
 
 # Funzione che ritorna True se il programma e'
