@@ -39,7 +39,7 @@ handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug)
 log.uplog("Starting ips-cc")
 
 if debug:
-    log.uplog("Debug mode detected, printing iptables -L")
+    log.uplog("Debug mode detected, printing iptables -L -n")
     log.uplog(utils.list_iptables())
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue

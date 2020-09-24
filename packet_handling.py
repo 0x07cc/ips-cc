@@ -32,13 +32,11 @@ class PacketHandling:
         payload_hex = payload.hex()
 
         # Verifica della versione di IP del pacchetto:
-        # Se non e' 4, non effettuo controlli
-        # e lo accetto.
-        #TODO: e se invece lo rifiutassi?
+        # Se non e' 4, non effettuo controlli e lo rifiuto.
         versioneIP = payload_hex[0]
         if versioneIP != '4':
-            self.log.uplog("Received a non-IPv4 packet, accepting it")
-            pkt.accept()
+            self.log.uplog("Received a non-IPv4 packet, dropping it")
+            pkt.drop()
             return
 
         # TODO: verificare se SYN e' settato, in tal caso -> accept()
