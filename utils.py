@@ -8,7 +8,7 @@ import sys
 #
 # Documentazione di riferimento:
 # https://en.wikipedia.org/wiki/IPv4#IHL
-def calcola_lunghezza_ipv4(carattere):
+def calcola_lunghezza_header(carattere):
     lunghezza = 20
     ihl = int(carattere, 16)
     lunghezza = (ihl*32)//8

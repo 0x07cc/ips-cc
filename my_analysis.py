@@ -34,13 +34,11 @@ class Shield:
 
     # Funzione che determina se un pacchetto e' da droppare.
     # Se ignore_TCP_parameters e' settato a True la ricerca ignora
-    # i primi 52 Bytes del pacchetto.
-    def is_droppable(self, payload, ignore_TCP_parameters=True):
+    # i primi dim_header Bytes del pacchetto.
+    def is_droppable(self, payload, ignore_TCP_parameters=True, dim_header=52):
         if (ignore_TCP_parameters):
-            payload = payload[52:]
-            # TODO: Va usato il data offset dell'header TCP.
-            # Non e' sempre lungo 52 Bytes!
-            # Vedere Drive per l'implementazione
+            payload = payload[dim_header:]
+            
         if (self.regex_trigger(payload)):
             return True
         # elif (...), aggiungere qui altre funzioni che possono determinare il drop

@@ -50,7 +50,10 @@ class PacketHandling:
         # il campo Data del segmento TCP.
         if self.debug:
             self.pcap.make_packet_record(payload_hex)
-            inizioTCP = utils.calcola_lunghezza_ipv4(payload_hex[1])
+            inizioTCP = utils.calcola_lunghezza_header(payload_hex[1])
+            lunghezza_header_TCP= utils.calcola_lunghezza_header(payload_hex[inizioTCP*2+24])
+            dim_header = inizioTCP + lunghezza_header_TCP
+            
             self.log.nt_uplog('-------------')
 
             # "TCP Packet, x bytes"
@@ -73,10 +76,7 @@ class PacketHandling:
 
             # TCP Data
             try:
-                self.log.uplog('Data received: ' + payload[52:-1].decode('utf-8'))
-                # TODO: Va usato il data offset dell'header TCP.
-                # Non e' sempre lungo 52 Bytes!
-                # Vedere Drive per l'implementazione
+                self.log.uplog('Data received: ' + payload[dim_header:-1].decode('utf-8'))
             except UnicodeDecodeError:
                 self.log.uplog("Can't decode received data")
 
@@ -84,7 +84,7 @@ class PacketHandling:
 
 
         # Verifica se il pacchetto e' da scartare
-        match = self.shield.is_droppable(payload)
+        match = self.shield.is_droppable(payload, dim_header)
         if match:
             pkt.drop()
             if not self.debug:
