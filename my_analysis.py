@@ -11,7 +11,7 @@ class Shield:
     # usate nell'analisi dei pacchetti.
     # service_type e' una variabile che definisce il tipo di servizio,
     # inoltre ottiene dal main l'oggetto Log per accedervi.
-    def __init__(self, regex_list, service_type, log):
+    def __init__(self, regex_list, service_type, log, iptables_list=None):
         log.uplog("Generating Shield object:",1)
         self.regex_list = regex_list
         self.compiled_regex = []
@@ -21,6 +21,7 @@ class Shield:
         self.service_type = service_type
         log.uplog("Service type: " + self.service_type,2)
         self.log = log
+        self.rules = None
 
     # Funzione che effettua il matching di una delle regex
     # presenti nella regex_list (e in forma compilata in
@@ -38,12 +39,44 @@ class Shield:
     def is_droppable(self, payload, ignore_TCP_parameters=True, dim_header=52):
         if (ignore_TCP_parameters):
             payload = payload[dim_header:]
-            
+
         if (self.regex_trigger(payload)):
             return True
         # elif (...), aggiungere qui altre funzioni che possono determinare il drop
         #   return True
         return False
+
+    def set_rules(self, iptables_list, nfqueue): 
+        if iptables_list == None:
+            return
+
+        rules = {}
+        # Creo una lista riga per riga
+        lista = iptables_list.split("\n")
+        lista2 = []
+
+        stringa_cercare =  "NFQUEUE num " + str(nfqueue)
+
+        # Ricerca riga per riga
+        for riga in lista:
+            if riga.find(stringa_cercare) != -1:
+                lista2.append(riga)
+
+        # In lista2 ci sono tutte le regole dell'NFQUEUE
+        for riga2 in lista2:
+            trovato = re.search("spt:(\d)+", riga2)
+            if trovato is not None:
+                porta = int(riga2[trovato.start()+4:trovato.end()])
+                rules[porta] = "OUTPUT"
+            else:
+                trovato = re.search("dpt:(\d)+", riga2)
+                if trovato is not None:
+                    porta = int(riga2[trovato.start()+4:trovato.end()])
+                    rules[porta] = "INPUT"
+                else:
+                    log.uplog("Qualcosa non va...")
+        print("RULES: "+str(rules))
+        self.rules = rules
 
 ''' Versione successiva, per ora inutile
 
@@ -69,3 +102,6 @@ class Shield:
             payload = payload[52:]           # per ogni servizio possibile, la variabile service_type
         return payload                       # sarà fatta in modo tale da permettere una classificazione generica
 '''
+
+
+        

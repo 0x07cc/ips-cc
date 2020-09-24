@@ -8,7 +8,7 @@ import sys
 #
 # Documentazione di riferimento:
 # https://en.wikipedia.org/wiki/IPv4#IHL
-def calcola_lunghezza_header(carattere):
+def calcola_lunghezza_header(carattere):  
     lunghezza = 20
     ihl = int(carattere, 16)
     lunghezza = (ihl*32)//8
@@ -44,7 +44,9 @@ def is_debug():
 
 # TODO Docs
 def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
-               PortaDestinazione, oldACK):
+               PortaDestinazione, newACK, newSeq, rst_ack):
+
+
     # Dotted IP To Hex
     source  = IPSorgente.split(".")
     source0 = hex(int(source[0]))
@@ -89,6 +91,12 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     header[10] = int(checksum1, 16)
     header[11] = int(checksum2, 16)
 
+    #TODO remove 
+    print("rst_ack: "+str(rst_ack))
+    print("\nIP Header final")
+    for i in header:
+        print(str(i) + " " + hex(header[i]))
+
     # Ports
     portaS = hex(PortaSorgente)
     portaD = hex(PortaDestinazione)
@@ -101,14 +109,14 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     TCPheader[1]  = int(portaS[4:6], 16) # Source Port 2
     TCPheader[2]  = int(portaD[2:4], 16) # Dest Port 1
     TCPheader[3]  = int(portaD[4:6], 16) # Dest Port 2
-    TCPheader[4]  = oldACK[0] # Sequence Number 1
-    TCPheader[5]  = oldACK[1] # Sequence Number 2
-    TCPheader[6]  = oldACK[2] # Sequence Number 3
-    TCPheader[7]  = oldACK[3] # Sequence Number 4
-    TCPheader[8]  = 0x00 # Acknowledgment 1
-    TCPheader[9]  = 0x00 # Acknowledgment 2
-    TCPheader[10] = 0x00 # Acknowledgment 3
-    TCPheader[11] = 0x00 # Acknowledgment 4
+    TCPheader[4]  = newSeq[0] # Sequence Number 1
+    TCPheader[5]  = newSeq[1] # Sequence Number 2
+    TCPheader[6]  = newSeq[2] # Sequence Number 3
+    TCPheader[7]  = newSeq[3] # Sequence Number 4
+    TCPheader[8]  = newACK[0] # Acknowledgment 1
+    TCPheader[9]  = newACK[1] # Acknowledgment 2
+    TCPheader[10] = newACK[2] # Acknowledgment 3
+    TCPheader[11] = newACK[3] # Acknowledgment 4
     TCPheader[12] = 0x50 # Header Length
     TCPheader[13] = 0x04 # Flags RST 04, ACK 10
     TCPheader[14] = 0x00 # Window size 1
@@ -146,7 +154,7 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     TCPheader[17] = int(checksum2, 16)
 
     # DEBUG TODO REMOVE
-    print("Pseudo")
+    print("\nPseudo")
     for i in PseudoHeader:
         print(str(i) + " " + hex(PseudoHeader[i]))
     print(" ")
@@ -182,3 +190,89 @@ def checksum_IPv4_header(ip_header):
     lenght = len(cksum)
     # Filling with zero (e.g. 0xb1a => 0x0b1a)
     return "0x"+(6-lenght)*"0"+cksum[2:]
+
+def genera_argomenti(payload_hex, inizioTCP, ipSource, ipDest, portaDest , portaSource, shield, rst_ack, data_length):
+
+        #TODO rischio che la porta del client sia uguale ad una di
+        #quelle su cui vige una regola. Basso rischio.
+
+        inizioTCPhex = 2* inizioTCP
+
+        if(True):
+            rule = shield.rules[portaDest]
+            if rule == "INPUT":
+
+                temp = ipSource
+                ipSource = ipDest
+                ipDest = temp
+                temp = portaDest
+                portaDest = portaSource
+                portaSource = temp
+
+                oldAck = [0,0,0,0]
+                oldAck[0] = int(payload_hex[inizioTCPhex+16:inizioTCPhex+18],16)
+                oldAck[1] = int(payload_hex[inizioTCPhex+18:inizioTCPhex+20],16)
+                oldAck[2] = int(payload_hex[inizioTCPhex+20:inizioTCPhex+22],16)
+                oldAck[3] = int(payload_hex[inizioTCPhex+22:inizioTCPhex+24],16)
+
+                if rst_ack == 1:
+                    # RST in risposta ad un pacchetto bloccato in input
+                    newAck = [0,0,0,0]
+                    newSeq = oldAck
+                    
+                if rst_ack == 2:
+                    # ACK in risposta ad un pacchetto bloccato in input
+                    newSeq = oldAck
+                    
+                    oldSeqN = int(payload_hex[inizioTCPhex+8: inizioTCPhex+16],16)
+                    oldSeqN = hex(oldSeqN + data_length)
+                    oldSeq = [0,0,0,0]
+                    oldSeq[0] = int(oldSeqN[2:4], 16)
+                    oldSeq[1] = int(oldSeqN[4:6], 16)
+                    oldSeq[2] = int(oldSeqN[6:8], 16)
+                    oldSeq[3] = int(oldSeqN[8:10],16)
+
+                    newAck = oldSeq
+                
+                return ipSource, ipDest, portaSource, portaDest, newAck, newSeq
+
+            # TODO controlla il caso rule == OUTPUT. 
+            # In teoria è un caso falsato.          
+
+                
+        else:
+            
+            rule = shield.rules[portaSource]
+
+            if rule == "OUTPUT":
+
+                oldAck = [0,0,0,0]
+                oldAck[0] = int(payload_hex[inizioTCPhex+16:inizioTCPhex+18],16)
+                oldAck[1] = int(payload_hex[inizioTCPhex+18:inizioTCPhex+20],16)
+                oldAck[2] = int(payload_hex[inizioTCPhex+20:inizioTCPhex+22],16)
+                oldAck[3] = int(payload_hex[inizioTCPhex+22:inizioTCPhex+24],16)
+
+                oldSeq = [0,0,0,0]
+                oldSeq[0] = int(payload_hex[inizioTCPhex+8: inizioTCPhex+10],16)
+                oldSeq[1] = int(payload_hex[inizioTCPhex+10:inizioTCPhex+12],16)
+                oldSeq[2] = int(payload_hex[inizioTCPhex+12:inizioTCPhex+14],16)
+                oldSeq[3] = int(payload_hex[inizioTCPhex+14:inizioTCPhex+16],16)
+
+                if rst_ack == 1:
+                    # RST in risposta ad un pacchetto bloccato in output
+                    newSeq = oldSeq
+                    newAck = [0,0,0,0]
+                    
+                if rst_ack == 2:
+                    # ACK in risposta ad un pacchetto bloccato in output
+                    newSeq = oldSeq
+                    newAck = oldAck
+                
+                return [ipSource, ipDest, portaSource, portaDest, newAck, newSeq]
+
+            return None, None, None, None, None, None
+
+            # TODO controlla il caso rule == INPUT. 
+            # In teoria è un caso falsato.  
+
+

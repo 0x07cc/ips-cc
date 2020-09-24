@@ -9,11 +9,12 @@ class PacketHandling:
     # di classe PCAP e un valore booleano
     # utilizzato per determinare se
     # stampare o meno le linee di debug.
-    def __init__(self, log, shield, pcap, debug=False):
+    def __init__(self, log, shield, pcap, debug=False, rst_ack=0):
         self.log = log
         self.shield = shield
         self.pcap = pcap
         self.debug = debug
+        self.rst_ack = rst_ack # 0 niente, 1 RST in risposta, 2 ACK in risposta  
         self.log.uplog("Starting Packet Handling Module")
         if self.debug:
             self.log.uplog("Debug mode, logging each packet")
@@ -52,8 +53,8 @@ class PacketHandling:
             self.pcap.make_packet_record(payload_hex)
             inizioTCP = utils.calcola_lunghezza_header(payload_hex[1])
             lunghezza_header_TCP= utils.calcola_lunghezza_header(payload_hex[inizioTCP*2+24])
-            dim_header = inizioTCP + lunghezza_header_TCP
-            
+            dim_header = inizioTCP + lunghezza_header_TCP        
+
             self.log.nt_uplog('-------------')
 
             # "TCP Packet, x bytes"
@@ -63,8 +64,10 @@ class PacketHandling:
             try:
                 ipSource = payload_hex[24:32]
                 ipDest = payload_hex[32:40]
-                self.log.uplog("Source IPv4: " + utils.calcolaIPv4(ipSource) +
-                               "  Destination IPv4: " + utils.calcolaIPv4(ipDest))
+                ipSourceint = utils.calcolaIPv4(ipSource)
+                ipDestint = utils.calcolaIPv4(ipDest)
+                self.log.uplog("Source IPv4: " +ipSourceint +
+                               "  Destination IPv4: " + ipDestint)
                 portaSource = payload[inizioTCP:inizioTCP+2].hex()
                 portaSourceint = int(portaSource, 16)
                 portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
@@ -90,5 +93,26 @@ class PacketHandling:
             if not self.debug:
                 self.pcap.make_packet_record(payload_hex)
             self.log.uplog("Packet dropped and added to pcap")
+    
+            if self.rst_ack != 0:
+                total_packet_length = int(payload_hex[4:8],16)
+
+                [ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq] = utils.genera_argomenti(
+                    payload_hex, inizioTCP, ipSourceint, ipDestint, 
+                    portaDestint , portaSourceint, self.shield, self.rst_ack, 
+                    total_packet_length-dim_header)
+                    
+                
+                utils.genera_RST(ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq, self.rst_ack)
+
         else:
             pkt.accept()
+
+    
+
+
+        
+        
+
+        
+

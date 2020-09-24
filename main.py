@@ -20,7 +20,7 @@ logfile = "logfile.log"
 pcapfile= "dropped_packets.pcap"
 regex_list = ['CC{\w+}','CCRU{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ']  # Lista di regex e stringhe bannate
 service_type = 'Netcat' # Tipo di servizio, per ora e' rappresentato dal nome
-
+rst_ack = 2
 
 # Verifica che l'utente sia root
 if not utils.is_root():
@@ -34,13 +34,15 @@ debug = utils.is_debug()
 log = mylog.Log(logfile)
 shield = my_analysis.Shield(regex_list, service_type, log)
 pcap_exporter = pcap.PCAP(log, pcapfile)
-handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug)
+handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug, rst_ack)
 
 log.uplog("Starting ips-cc")
 
 if debug:
     log.uplog("Debug mode detected, printing iptables -L -n")
-    log.uplog(utils.list_iptables())
+    iptables_list = utils.list_iptables()
+    shield.set_rules(iptables_list, numero_queue)
+    log.uplog(iptables_list)
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
