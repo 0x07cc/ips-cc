@@ -2,8 +2,8 @@
 # Un mini-IPS per CC
 Un programma che ha lo scopo di bloccare il transito di pacchetti TCP contenenti un dato pattern.  
 Fa uso di iptables, disponibili nel Kernel Linux a partire dalla versione 2.4 .  
-Può essere programmato per bloccare traffico in entrata o in uscita semplicemente modificando la regola iptables.
-Non gestisce i pacchetti IPv6.
+Può essere programmato per bloccare traffico in entrata o in uscita semplicemente modificando la regola iptables.  
+Non gestisce i pacchetti IPv6.  
 Può inoltre essere programmato per inviare risposte RST/ACK ai pacchetti bloccati per killare/continuare la connessione.
 
 ## Arch Linux: Quick Start

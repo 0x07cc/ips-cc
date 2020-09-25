@@ -2,8 +2,8 @@
 # A mini-IPS for CC
 A program that has the purpose to block TCP data packets containing a given pattern.  
 It uses iptables, available in the Linux Kernel >=2.4 .  
-It can be programmed to block incoming or outgoing traffic just by editing the iptables rule. 
-It doesn't handle IPv6 packets.
+It can be programmed to block incoming or outgoing traffic just by editing the iptables rule.  
+It doesn't handle IPv6 packets.  
 It can also be programmed to send RST/ACK replies to dropped packets in order to kill/continue the connection.
 
 ## Arch Linux: Quick Start
