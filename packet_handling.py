@@ -14,7 +14,7 @@ class PacketHandling:
         self.shield = shield
         self.pcap = pcap
         self.debug = debug
-        self.rst_ack = rst_ack # 0 niente, 1 RST in risposta, 2 ACK in risposta  
+        self.rst_ack = rst_ack # 0: only drop; 1: RST in reply; 2: ACK in reply
         self.log.uplog("Starting Packet Handling Module")
         if self.debug:
             self.log.uplog("Debug mode, logging each packet")
@@ -40,6 +40,13 @@ class PacketHandling:
             pkt.drop()
             return
 
+        # Calcolo Header Length: Uso campo IHL dell'header IPv4
+        inizioTCP = utils.calcola_lunghezza_header(payload_hex[1])
+        # Uso campo Data Offset dell'header TCP
+        lunghezza_header_TCP = utils.calcola_lunghezza_header(payload_hex[inizioTCP*2+24])
+        # Dimensione totale degli header IPv4 + TCP, da qui iniziano i dati.
+        dim_header = inizioTCP + lunghezza_header_TCP
+
         # TODO: verificare se SYN e' settato, in tal caso -> accept()
         # Verificare prima se si puo' trasmettere dati anche col flag
         # SYN, altrimenti si crea una vulnerabilita'.
@@ -50,17 +57,15 @@ class PacketHandling:
         # decodifica (UTF-8) e stampa a video
         # il campo Data del segmento TCP.
         if self.debug:
+            # Salva OGNI pacchetto nel file .pcap
             self.pcap.make_packet_record(payload_hex)
-            inizioTCP = utils.calcola_lunghezza_header(payload_hex[1])
-            lunghezza_header_TCP= utils.calcola_lunghezza_header(payload_hex[inizioTCP*2+24])
-            dim_header = inizioTCP + lunghezza_header_TCP        
 
             self.log.nt_uplog('-------------')
 
             # "TCP Packet, x bytes"
             self.log.uplog(pkt)
 
-            # Source/Dest IPv4 and port
+            # Source/Dest IPv4 and ports
             try:
                 ipSource = payload_hex[24:32]
                 ipDest = payload_hex[32:40]
@@ -68,6 +73,7 @@ class PacketHandling:
                 ipDestint = utils.calcolaIPv4(ipDest)
                 self.log.uplog("Source IPv4: " +ipSourceint +
                                "  Destination IPv4: " + ipDestint)
+
                 portaSource = payload[inizioTCP:inizioTCP+2].hex()
                 portaSourceint = int(portaSource, 16)
                 portaDest = payload[inizioTCP+2:inizioTCP+4].hex()
@@ -85,34 +91,29 @@ class PacketHandling:
 
             self.log.nt_uplog('-------------')
 
-
         # Verifica se il pacchetto e' da scartare
         match = self.shield.is_droppable(payload, dim_header)
         if match:
             pkt.drop()
+
             if not self.debug:
                 self.pcap.make_packet_record(payload_hex)
+            # Devo salvarlo SOLO se non siamo in debug mode,
+            # altrimenti e' stato gia' salvato sopra.
             self.log.uplog("Packet dropped and added to pcap")
-    
+
+            # Verifico se devo solo droppare il pacchetto (rst_ack == 0);
+            # dropparlo e inviare un pacchetto RST (rst_ack == 1) oppure
+            # dropparlo e inviare un pacchetto ACK (rst_ack == 2).
             if self.rst_ack != 0:
+                # Dal campo Total Length di IPv4
                 total_packet_length = int(payload_hex[4:8],16)
 
                 [ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq] = utils.genera_argomenti(
                     payload_hex, inizioTCP, ipSourceint, ipDestint, 
                     portaDestint , portaSourceint, self.shield, self.rst_ack, 
                     total_packet_length-dim_header)
-                    
-                
-                utils.genera_RST(ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq, self.rst_ack)
 
+                utils.genera_RST(ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq, self.rst_ack)
         else:
             pkt.accept()
-
-    
-
-
-        
-        
-
-        
-

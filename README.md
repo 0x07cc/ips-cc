@@ -3,7 +3,8 @@
 A program that has the purpose to block TCP data packets containing a given pattern.  
 It uses iptables, available in the Linux Kernel >=2.4 .  
 It can be programmed to block incoming or outgoing traffic just by editing the iptables rule. 
-
+It doesn't handle IPv6 packets.
+It can also be programmed to send RST/ACK replies to dropped packets in order to kill/continue the connection.
 
 ## Arch Linux: Quick Start
 Installing:
@@ -34,3 +35,7 @@ Installing:
 ## iptables example rules
 1. Default: Block outgoing traffic from an application running on the machine (server) to clients: `sudo iptables -A OUTPUT -j NFQUEUE --queue-num 33 -p tcp --sport 2222`
 1. Block incoming traffic from clients to an application running on the machine (server): `sudo iptables -A INPUT -j NFQUEUE --queue-num 33 -p tcp --dport 2222`
+
+## Debug mode
+In debug mode the program will print on screen each packet it handles and save it in a .pcap file.
+To activate it: `sudo ./main.py -d` or `sudo ./main.py --debug`
