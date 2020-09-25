@@ -37,5 +37,5 @@ Installing:
 1. Block incoming traffic from clients to an application running on the machine (server): `sudo iptables -A INPUT -j NFQUEUE --queue-num 33 -p tcp --dport 2222`
 
 ## Debug mode
-In debug mode the program will print on screen each packet it handles and save it in a .pcap file.
+In debug mode the program will print on screen each packet it handles and save it in a .pcap file.  
 To activate it: `sudo ./main.py -d` or `sudo ./main.py --debug`
