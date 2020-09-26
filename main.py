@@ -41,11 +41,11 @@ pcap_exporter = pcap.PCAP(log, pcapfile)
 handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug, rst_ack)
 
 log.uplog("Starting ips-cc")
+iptables_list = utils.list_iptables()
+shield.set_rules(iptables_list, numero_queue)
 
 if debug:
     log.uplog("Debug mode detected, printing iptables -L -n")
-    iptables_list = utils.list_iptables()
-    shield.set_rules(iptables_list, numero_queue)
     log.uplog(iptables_list)
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue

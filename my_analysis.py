@@ -11,7 +11,7 @@ class Shield:
     # usate nell'analisi dei pacchetti.
     # service_type e' una variabile che definisce il tipo di servizio,
     # inoltre ottiene dal main l'oggetto Log per accedervi.
-    def __init__(self, regex_list, service_type, log, iptables_list=None):
+    def __init__(self, regex_list, service_type, log, rules=None):
         log.uplog("Generating Shield object:",1)
         self.regex_list = regex_list
         self.compiled_regex = []
@@ -21,7 +21,7 @@ class Shield:
         self.service_type = service_type
         log.uplog("Service type: " + self.service_type,2)
         self.log = log
-        self.rules = None
+        self.rules = rules
 
     # Funzione che effettua il matching di una delle regex
     # presenti nella regex_list (e in forma compilata in
