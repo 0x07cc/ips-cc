@@ -20,7 +20,7 @@ logfile = "logfile.log"
 pcapfile= "dropped_packets.pcap"
 regex_list = ['CC{\w+}','CCRU{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ']  # Lista di regex e stringhe bannate
 service_type = 'Netcat' # Tipo di servizio, per ora e' rappresentato dal nome
-rst_ack = 2
+rst_ack = 1
 
 # Verifica che l'utente sia root
 if not utils.is_root():

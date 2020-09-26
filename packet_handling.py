@@ -71,7 +71,7 @@ class PacketHandling:
                 ipDest = payload_hex[32:40]
                 ipSourceint = utils.calcolaIPv4(ipSource)
                 ipDestint = utils.calcolaIPv4(ipDest)
-                self.log.uplog("Source IPv4: " +ipSourceint +
+                self.log.uplog("Source IPv4: " + ipSourceint +
                                "  Destination IPv4: " + ipDestint)
 
                 portaSource = payload[inizioTCP:inizioTCP+2].hex()
@@ -109,11 +109,10 @@ class PacketHandling:
                 # Dal campo Total Length di IPv4
                 total_packet_length = int(payload_hex[4:8],16)
 
-                [ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq] = utils.genera_argomenti(
-                    payload_hex, inizioTCP, ipSourceint, ipDestint, 
-                    portaDestint , portaSourceint, self.shield, self.rst_ack, 
+                [ipSource, ipDest, portaSource, portaDest, newAck, newSeq] = utils.genera_argomenti(
+                    payload_hex, inizioTCP, self.shield, self.rst_ack, 
                     total_packet_length-dim_header)
 
-                utils.genera_RST(ipSourceint, ipDestint, portaSourceint, portaDestint, newAck, newSeq, self.rst_ack)
+                utils.genera_RST(ipSource, ipDest, portaSource, portaDest, newAck, newSeq, self.rst_ack)
         else:
             pkt.accept()
