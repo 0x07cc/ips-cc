@@ -161,7 +161,13 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     # Invio pacchetto
     s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
     s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-    s.sendto(packet, ('192.168.122.1', 0))
+
+    ipdest_real = ""
+    for i in range(0, 8, 2):
+        ipdest_real += str(int(IPDestinatario[i]+IPDestinatario[i+1],16))+"."
+    ipdest_real = ipdest_real[:-1]
+
+    s.sendto(packet, (ipdest_real, 0))
 
 # Calculates the checksum for an IP header
 # Author: Grant Curell
