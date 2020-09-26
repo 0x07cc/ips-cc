@@ -57,6 +57,7 @@ class PCAP:
     # Richiede in ingresso una stringa contenente
     # un pacchetto IP (In genere inizia con '450000')
     def make_packet_record(self, IP_packet):
+        # TODO : hex può ritornare 0x3322 (elimina gli zero davanti)
         # Seconds and microseconds
         time_hex = hex(int(time.time()))[2:10] # Seconds from epoch
         time_1= time_hex[0:2]
@@ -71,9 +72,15 @@ class PCAP:
         packet_length_int = len(IP_packet)//2
         packet_length_hex = hex(packet_length_int)[2:]
         # Fill the rest with zero
-        packet_length = packet_length_hex + '0'*(8-len(packet_length_hex))
-        packet_record += packet_length # Captured Packet Length
-        packet_record += packet_length # Original Packet Length
+        packet_length =  '0'*(8-len(packet_length_hex)) + packet_length_hex
+        # Inverto l'endianess
+        packet_length_le = ""
+        packet_length_le =  packet_length[6:8]
+        packet_length_le += packet_length[4:6]
+        packet_length_le += packet_length[2:4]
+        packet_length_le += packet_length[0:2]
+        packet_record += packet_length_le # Captured Packet Length
+        packet_record += packet_length_le # Original Packet Length
 
         # IP Packet
         packet_record += IP_packet
