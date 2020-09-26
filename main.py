@@ -20,6 +20,10 @@ logfile = "logfile.log"
 pcapfile= "dropped_packets.pcap"
 regex_list = ['CC{\w+}','CCRU{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ']  # Lista di regex e stringhe bannate
 service_type = 'Netcat' # Tipo di servizio, per ora e' rappresentato dal nome
+# rst_ack controls the packet dropping policy:
+# 0: only drop the packet;
+# 1: drop the packet and send a RST packet to kill the connection;
+# 2: drop the packet and send a ACK packet to continue the connection.
 rst_ack = 1
 
 # Verifica che l'utente sia root

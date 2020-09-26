@@ -116,14 +116,14 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     PseudoHeader[1] = int(IPSorgente[2:4], 16)      # Source 2
     PseudoHeader[2] = int(IPSorgente[4:6], 16)      # Source 3
     PseudoHeader[3] = int(IPSorgente[6:8], 16)      # Source 4
-    PseudoHeader[4] = int(IPDestinatario[0:2], 16)  # Source 1 # TODO destinazione
-    PseudoHeader[5] = int(IPDestinatario[2:4], 16)  # Source 2
-    PseudoHeader[6] = int(IPDestinatario[4:6], 16)  # Source 3
-    PseudoHeader[7] = int(IPDestinatario[6:8], 16)  # Source 4
+    PseudoHeader[4] = int(IPDestinatario[0:2], 16)  # Dest 1
+    PseudoHeader[5] = int(IPDestinatario[2:4], 16)  # Dest 2
+    PseudoHeader[6] = int(IPDestinatario[4:6], 16)  # Dest 3
+    PseudoHeader[7] = int(IPDestinatario[6:8], 16)  # Dest 4
     PseudoHeader[8] = 0x00
     PseudoHeader[9] = 0x06 # Protocol
     PseudoHeader[10] = 0x00 # TCP length 1
-    PseudoHeader[11] = 0x28 # TCP length 2 # TODO ?
+    PseudoHeader[11] = 0x14 # TCP length 2 (20 in esadecimale)
 
     # Merging dictionaries
     merged_dict = PseudoHeader.copy()
