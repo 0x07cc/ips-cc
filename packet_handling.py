@@ -100,7 +100,7 @@ class PacketHandling:
                 self.pcap.make_packet_record(payload_hex)
             # Devo salvarlo SOLO se non siamo in debug mode,
             # altrimenti e' stato gia' salvato sopra.
-            self.log.uplog("Packet dropped and added to pcap")
+            self.log.uplog("Packet dropped and added to pcap",1,"red")
 
             # Verifico se devo solo droppare il pacchetto (rst_ack == 0);
             # dropparlo e inviare un pacchetto RST (rst_ack == 1) oppure

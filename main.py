@@ -18,8 +18,17 @@ import pcap
 numero_queue = 33
 logfile = "logfile.log"
 pcapfile= "dropped_packets.pcap"
-regex_list = ['CC{\w+}','CCRU{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ']  # Lista di regex e stringhe bannate
-service_type = 'Netcat' # Tipo di servizio, per ora e' rappresentato dal nome
+
+# This dictionary gives the list of banned strings/regex for a given iptables rule (I-3000 = blocking INPUT packets on port 3000)
+regex_list = {'I-2222' : ['CC{\w+}','CCRU{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ' ],
+              'O-3000' : ["la mi passsword","sito/admin/freesoldi.php"],
+              'I-3000' : ["python","Or 1=1","UNION"]
+              }
+
+# Service Type for any given port
+services_type = {2222:'Raw', 3000:'HTTP'} 
+
+
 # rst_ack controls the packet dropping policy:
 # 0: only drop the packet;
 # 1: drop the packet and send a RST packet to kill the connection;
@@ -36,13 +45,13 @@ debug = utils.is_debug()
 
 # Creazione oggetti di classe Log, Shield, PCAP e PacketHandling
 log = mylog.Log(logfile)
-shield = my_analysis.Shield(regex_list, service_type, log)
+shield = my_analysis.Shield(regex_list, services_type, log)
 pcap_exporter = pcap.PCAP(log, pcapfile)
 handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug, rst_ack)
 
 log.uplog("Starting ips-cc")
 iptables_list = utils.list_iptables()
-shield.set_rules(iptables_list, numero_queue)
+shield.set_services(iptables_list, numero_queue)
 
 if debug:
     log.uplog("Debug mode detected, printing iptables -L -n")

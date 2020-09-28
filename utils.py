@@ -204,7 +204,8 @@ def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length):
               #" portaSource: " + portaSource + " portaDest: " + portaDest)
 
         if(True):
-            rule = shield.rules[int(portaDest, 16)]
+            #rule = shield.services[int(portaDest, 16)]
+            rule = "INPUT"
             if rule == "INPUT":
 
                 oldAck = [0,0,0,0]
@@ -239,7 +240,7 @@ def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length):
             # In teoria è un caso falsato.          
 
                 
-        else:
+        elif():
             
             rule = shield.rules[int(portaSource, 16)]
 

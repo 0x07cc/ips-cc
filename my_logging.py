@@ -38,12 +38,24 @@ class Log:
     # una time string basata sul tempo reale (datetime.now).
     # new_line descrive il numero di \n da concatenare
     #alla stringa in input (default 1).
-    def uplog(self, s, new_line=1):
+    def uplog(self, s, new_line=1, color = "None",bold=0):
         s = str(s)
         now = datetime.now()
         ts = now.strftime("%d/%m/%Y %H:%M:%S")  # time string
-        print("[" + ts + "]: " + s + "\n"*new_line) # la print aggiunge un \n di suo, ma a schermo va bene
+        log_s = "[" + ts + "]: " + s + "\n"*new_line # la print aggiunge un \n di suo, ma a schermo va bene
         self.logfile.write("["+ts+"]: "+ s +"\n"*new_line)
+
+        if(color != None or bold !=0):  # Colore della stringa di log https://ozzmaker.com/add-colour-to-text-in-python/
+            if color == None:
+                log_s = "\033["+str(bold)+";37;40m"+log_s+"\033[0;37;40m"
+            elif color == "red":
+                log_s = "\033["+str(bold)+";31;40m"+log_s+"\033[0;37;40m"
+            elif color == "yellow":
+                log_s = "\033["+str(bold)+";33;40m"+log_s+"\033[0;37;40m"
+            elif color == "cyan":
+                log_s = "\033["+str(bold)+";36;40m"+log_s+"\033[0;37;40m"
+        print(log_s)
+
 
     # Funzione di Relative Time Update Log:
     # Stampa a video e nel file la stringa
