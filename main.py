@@ -8,8 +8,8 @@
  In debug mode every packet will be printed on screen and saved in pcap file.
 '''
 from netfilterqueue import NetfilterQueue
-import my_logging as mylog
-import my_analysis
+import logging 
+import analysis
 import utils
 import packet_handling
 import pcap
@@ -33,7 +33,7 @@ services_type = {2222:'Raw', 3000:'HTTP'}
 # 0: only drop the packet;
 # 1: drop the packet and send a RST packet to kill the connection;
 # 2: drop the packet and send a ACK packet to continue the connection.
-rst_ack = 1
+rst_ack = 2
 
 # Verifica che l'utente sia root
 if not utils.is_root():
@@ -43,9 +43,16 @@ if not utils.is_root():
 # Verifica se il programma e' stato avviato con il flag di debug
 debug = utils.is_debug()
 
+# This set the logger treshold level 
+if debug:
+    log_level = "DEBUG"
+else:
+    log_level = "INFO"
+
+
 # Creazione oggetti di classe Log, Shield, PCAP e PacketHandling
-log = mylog.Log(logfile)
-shield = my_analysis.Shield(regex_list, services_type, log)
+log = logging.Log(logfile, log_level)
+shield = analysis.Shield(regex_list, services_type, log)
 pcap_exporter = pcap.PCAP(log, pcapfile)
 handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug, rst_ack)
 
@@ -53,9 +60,9 @@ log.uplog("Starting ips-cc")
 iptables_list = utils.list_iptables()
 shield.set_services(iptables_list, numero_queue)
 
-if debug:
-    log.uplog("Debug mode detected, printing iptables -L -n")
-    log.uplog(iptables_list)
+
+log.uplog("Debug mode detected, printing iptables -L -n","DEBUG")
+log.uplog(iptables_list,"DEBUG")
 
 # Creazione e bind dell'oggetto di classe NetfilterQueue
 nfqueue = NetfilterQueue()
