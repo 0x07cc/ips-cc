@@ -13,45 +13,53 @@ import my_analysis
 import utils
 import packet_handling
 import pcap
+import stats
 
 # Parameters
-numero_queue = 33
-logfile = "logfile.log"
-pcapfile= "dropped_packets.pcap"
-regex_list = ['CC{\w+}','CCRU{\w+}','doveva annà così fratellì','https://www.youtube.com/watch?v=dQw4w9WgXcQ']  # Lista di regex e stringhe bannate
-service_type = 'Netcat' # Tipo di servizio, per ora e' rappresentato dal nome
-# rst_ack controls the packet dropping policy:
+queue_number = 33
+log_file  = "logfile.log"
+pcap_file = "dropped_packets.pcap"
+# List of banned Regular Expressions and strings
+regex_list = ['CC{\w+}', 'CCRU{\w+}', 'doveva annà così fratellì', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ']
+service_type = 'Netcat'  # Name of the service
+# Parameter that controls the packet dropping policy:
 # 0: only drop the packet;
 # 1: drop the packet and send a RST packet to kill the connection;
 # 2: drop the packet and send a ACK packet to continue the connection.
-rst_ack = 1
+dropping_policy = 1
 
-# Verifica che l'utente sia root
+# Checking root privileges
 if not utils.is_root():
     print("You need root privileges to run this application!")
-    exit()
+    exit(-1)
 
-# Verifica se il programma e' stato avviato con il flag di debug
+# Checking debug flag status (-d or --debug)
 debug = utils.is_debug()
 
-# Creazione oggetti di classe Log, Shield, PCAP e PacketHandling
-log = mylog.Log(logfile)
+# Indispensable objects instantiation
+log = mylog.Log(log_file)
 shield = my_analysis.Shield(regex_list, service_type, log)
-pcap_exporter = pcap.PCAP(log, pcapfile)
-handling = packet_handling.PacketHandling(log, shield, pcap_exporter, debug, rst_ack)
+handling = packet_handling.PacketHandling(log, shield, debug, dropping_policy)
+
+# Optional objects instantiation: comment them to disable
+statistics = stats.Stats(log, handling)
+pcap_exporter = pcap.PCAP(log, handling, pcap_file)
 
 log.uplog("Starting ips-cc")
+
+# Retrieving iptables list and determining the policy of each rule
 iptables_list = utils.list_iptables()
-shield.set_rules(iptables_list, numero_queue)
+shield.set_rules(iptables_list, queue_number)
 
 if debug:
     log.uplog("Debug mode detected, printing iptables -L -n")
     log.uplog(iptables_list)
 
-# Creazione e bind dell'oggetto di classe NetfilterQueue
+# NetfilterQueue object instantiation and binding
 nfqueue = NetfilterQueue()
-nfqueue.bind(numero_queue, handling.handle_packet)
+nfqueue.bind(queue_number, handling.handle_packet)
 
+# "run()" is a blocking method. The program will close on CTRL-C
 try:
     nfqueue.run()
 except KeyboardInterrupt:
