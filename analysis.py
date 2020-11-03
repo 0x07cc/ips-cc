@@ -139,16 +139,16 @@ class Service:
     # regex for this service.
     def set_compiled_regex(self):
         if len(self.regex_list) == 0:
-            self.log.cust_uplog("Service "+ self.key + " [Type: "
+            self.log.cust_uplog("Service " + self.key + " [Type: "
                                 + self.service_type + "]"
-                                + " has an empty regex list", newline=0,
+                                + " has an empty regex list", new_line=0,
                                 color=None, bold=1)
             self.log.uplog("The IPS will accept all packets on " + self.key, "WARN", 0)
             self.log.nt_uplog("\n")
             return
 
         self.log.cust_uplog("Service " + self.key
-                            + " [Type: " + self.service_type + "]", newline=0,
+                            + " [Type: " + self.service_type + "]", new_line=0,
                             color=None, bold=1)
         for r in self.regex_list:
             self.compiled_regex.append(re.compile(r.encode()))
