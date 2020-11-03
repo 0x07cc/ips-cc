@@ -11,7 +11,8 @@ class Log:
     # passato, ha inizio da time.time().
     # Apre il file passatogli tramite parametro
     # e vi appende una linea iniziale.
-    def __init__(self, logfile="logfile.log", time_start=time.time(), erase_old_logfile=False):
+    def __init__(self, logfile="logfile.log",
+                 time_start=time.time(), erase_old_logfile=False):
         if time_start is None:
             time_start = time.time()
         self.time_start = time_start
@@ -24,12 +25,13 @@ class Log:
         try:
             if erase_old_logfile:
                 self.logfile = open(logfile, "w")
+                self.logfile.write("[" + ts + "]: Erasing old Log session\n")
             else:
                 self.logfile = open(logfile, "a")
+
+            self.logfile.write("[" + ts + "]: Starting Log session\n")
         except OSError:
             print("[" + ts + "]: Error while opening logfile.")
-
-        self.logfile.write("[" + ts + "]: Starting Log session\n")
 
     # Metodo di Update Log (Aggiornamento Log):
     # Stampa a video e nel file la stringa

@@ -170,7 +170,6 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
         destIPV4 += str(int(IPDestinatario[i] + IPDestinatario[i + 1], 16))
         destIPV4 += "."
     destIPV4 = destIPV4[:-1]
-
     # TODO spostare invio in Handling?
     s.sendto(packet, (destIPV4, 0))
 
