@@ -148,17 +148,14 @@ class Log:
 
         if color is not None or bold != 0:
             if color is None:
-                log_s = self.STARTSTRING.format(bold, 37, 39)
-                + log_s + self.ENDSTRING
+                log_s = self.STARTSTRING.format(bold, 37, 39) + log_s
             elif color == "red":
-                log_s = self.STARTSTRING.format(bold, 31, 39)
-                + log_s + self.ENDSTRING
+                log_s = self.STARTSTRING.format(bold, 31, 39) + log_s
             elif color == "yellow":
-                log_s = self.STARTSTRING.format(bold, 33, 39)
-                + log_s + self.ENDSTRING
+                log_s = self.STARTSTRING.format(bold, 33, 39) + log_s
             elif color == "cyan":
-                log_s = self.STARTSTRING.format(bold, 36, 39)
-                + log_s + self.ENDSTRING
+                log_s = self.STARTSTRING.format(bold, 36, 39) + log_s
+            log_s += self.ENDSTRING
         print(log_s)
 
     # Metodo di Relative Time Update Log:
