@@ -216,11 +216,13 @@ def recomp_checksum(payload, inizioTCP, IPDestinatario, IPSorgente):
     for i in range(nh):
         pay_dict[i] = PseudoHeader[i]
     for i in range(nh, len(payload) + nh - inizioTCP):
-        pay_dict[i] = payload[i - nh + inizioTCP]  # Qui va bene che venga convertito ad int
+        # Qui va bene che venga convertito ad int
+        pay_dict[i] = payload[i - nh + inizioTCP]
     # print(pay_dict)
 
     # Calcolo il checksum e lo rimetto al suo posto
-    # print("InzioTcp: "+str(inizioTCP)+"  Lunghezza Pseudoheader: "+str(nh)+"  Posizione checksum nel dizionario: "+str(nh+16))
+    # print("InzioTcp: "+str(inizioTCP)+"  Lunghezza Pseudoheader: "
+    # +str(nh)+"  Posizione checksum nel dizionario: "+str(nh+16))
     checksum = int(checksum_IPv4_header(pay_dict), 16)
     print("Checksum: " + str(checksum.to_bytes(2, "big")) + str(checksum))
     # print(payload[inizioTCP:])

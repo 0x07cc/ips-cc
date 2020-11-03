@@ -8,7 +8,6 @@ import json
 # This class defines the object Service, whose fields describe the port, type and rule applied.
 # This last field implies that different rules (input/output) are represented by different objects.
 class Service:
-
     CREATE_RULE_COMM = 'iptables -A {} -j NFQUEUE --queue-num {} -p tcp --{} {}'
     ERASE_RULE_COMM = 'iptables -D {} {}'
     RULE_STR1 = "NFQUEUE    tcp  --  0.0.0.0/0            0.0.0.0/0            tcp {}:{} NFQUEUE num {}"
@@ -142,13 +141,15 @@ class Service:
         if len(self.regex_list) == 0:
             self.log.cust_uplog("Service "+ self.key + " [Type: "
                                 + self.service_type + "]"
-                                + " has an empty regex list", 0, None, 1)
-            self.log.uplog("The IPS will accept all packets on "+self.key, "WARN", 0)
+                                + " has an empty regex list", newline=0,
+                                color=None, bold=1)
+            self.log.uplog("The IPS will accept all packets on " + self.key, "WARN", 0)
             self.log.nt_uplog("\n")
             return
 
         self.log.cust_uplog("Service " + self.key
-                            + " [Type: " + self.service_type + "]", 0, None, 1)
+                            + " [Type: " + self.service_type + "]", newline=0,
+                            color=None, bold=1)
         for r in self.regex_list:
             self.compiled_regex.append(re.compile(r.encode()))
             self.log.uplog("Regex added: " + r, "INFO", 0)
@@ -509,11 +510,11 @@ class Shield:
 
 
     # Metodo che determina se un pacchetto e' da droppare.
-    # Se ignore_TCP_parameters e' settato a True la ricerca ignora
+    # Se ignore_TCP_header e' settato a True la ricerca ignora
     # i primi dim_header bytes del pacchetto.
     def is_droppable(self, payload, dim_header=52,
-                     service=None, ignore_TCP_parameters=True):
-        if (ignore_TCP_parameters):
+                     service=None, ignore_TCP_header=True):
+        if (ignore_TCP_header):
             payload = payload[dim_header:]
 
         if (self.regex_trigger(payload,service)):
@@ -588,8 +589,8 @@ class Shield:
     # Metodo che censura i payload malevoli con
     # censor_string (eg "python" -> "xxxxxx")
     def censor(self, payload, dim_header=52,
-               censor_string="x", service=None, ignore_TCP_parameters=True):
-        if (ignore_TCP_parameters):
+               censor_string="x", service=None, ignore_TCP_header=True):
+        if (ignore_TCP_header):
             payload_d = payload[dim_header:]
         else:
             payload_d = payload

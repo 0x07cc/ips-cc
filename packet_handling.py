@@ -54,7 +54,7 @@ class PacketHandling:
         # Se non e' 4, non effettuo controlli e lo rifiuto.
         versioneIP = payload_hex[0]
         if versioneIP != '4':
-            self.log.uplog("Received a non-IPv4 packet, dropping it", "DEFENCE")
+            self.log.uplog("Got a non-IPv4 packet, dropping it", "DEFENCE")
             pkt.drop()
             if self.stats:
                 self.stats.add_dropped()
@@ -68,14 +68,15 @@ class PacketHandling:
         # https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
         # Se il pacchetto ricevuto non e' TCP, lo accetto TODO FIXME
         if payload_hex[19] != '6':
-            self.log.uplog("Received a non-TCP packet, accepting it", "DEFENCE")
+            self.log.uplog("Got a non-TCP packet, accepting it", "DEFENCE")
             pkt.accept()
             if self.stats:
                 self.stats.add_accepted()
             return
 
         # Uso campo Data Offset dell'header TCP
-        lunghezza_header_TCP = utils.calcola_lunghezza_header(payload_hex[inizioTCP * 2 + 24])
+        data_offset = payload_hex[inizioTCP * 2 + 24]
+        lunghezza_header_TCP = utils.calcola_lunghezza_header(data_offset)
         # Dimensione totale degli header IPv4 + TCP, da qui iniziano i dati.
         dim_header = inizioTCP + lunghezza_header_TCP
 
