@@ -1,52 +1,78 @@
-# Packet Handling Module
+"""Packet Handling module"""
 import utils
 
 
 class PacketHandling:
 
-    # Metodo costruttore dell'oggetto.
-    # Prende in input un oggetto di classe Log,
-    # un oggetto di classe Shield, un oggetto
-    # di classe PCAP e un valore booleano
-    # utilizzato per determinare se
-    # stampare o meno le linee di debug.
     def __init__(self, log, shield, debug=False, rst_ack=0):
+        """ Metodo costruttore dell'oggetto.
+
+            Args:
+                log (obj): A [Log](my_logging.html#ips-cc.my_logging.Log) object.
+                shield (obj): A [Shield](my_analysis.html#ips-cc.my_analysis.Shield) object.
+                debug (bool): if `True`, every packet will be printed on screen and logged in the PCAP file.
+                rst_ack (int): The dropping policy:
+                * 0: only drop the packet;
+                * 1: drop the packet and send a RST packet to kill the connection;
+                * 2: drop the packet and send a ACK packet to continue the connection.
+        """
         self.log = log
         self.shield = shield
         self.debug = debug
         self.rst_ack = rst_ack  # 0: drop; 1: RST in reply; 2: ACK in reply
+
         self.stats = None
+        """ Variable that can be set by `PacketHandling.stats_hook`.
+            Defaults to *None*."""
+
         self.pcap = None
+        """ Variable that can be set by `PacketHandling.pcap_hook`.
+            Defaults to *None*."""
+
         self.log.uplog("Starting Packet Handling Module")
         if self.debug:
             self.log.uplog("Debug mode, logging each packet")
 
-    # Metodo setter di self.stats:
-    # Viene chiamato dall'oggetto di classe Stats.
-    # Necessario per l'aggiornamento delle statistiche.
     def stats_hook(self, statistics):
+        """ Metodo setter di `PacketHandling.stats`:
+
+            Viene chiamato dall'oggetto di classe Stats.
+            Necessario per l'aggiornamento delle statistiche.
+
+            Args:
+                statistics (obj): A [Stats](stats.html#ips-cc.stats.Stats) object.
+        """
         if statistics is not None:
             self.stats = statistics
             self.log.uplog("Statistics Module hooked to Handling Module")
 
-    # Metodo setter di self.pcap:
-    # Viene chiamato dall'oggetto di classe PCAP.
-    # Necessario per l'export dei pacchetti droppati.
     def pcap_hook(self, pcap_obj):
+        """ Metodo setter di `PacketHandling.pcap`:
+
+            Viene chiamato dall'oggetto di classe PCAP.
+            Necessario per l'export dei pacchetti droppati.
+
+            Args:
+                pcap_obj (obj): A [PCAP](pcap.html#ips-cc.pcap.PCAP) object.
+        """
         if pcap_obj is not None:
             self.pcap = pcap_obj
             self.log.uplog("PCAP Module hooked to Handling Module")
 
-    # Metodo che verra' chiamato dal main e
-    # deve essere specificato in:
-    # nfqueue.bind(numero_queue, PacketHandling::handle_packet).
-    # Prende in input un oggetto di classe Packet e
-    # verifica se e' presente la flag di debug.
-    # Se e' presente stampa i dati del pacchetto
-    # a video e scrive il pacchetto nel file pcap.
-    # Infine, facendo uso dell'oggetto di classe
-    # Shield, decreta il verdetto del pacchetto.
     def handle_packet(self, pkt):
+        """ Metodo che verra' chiamato dal main e
+            deve essere specificato in:
+            nfqueue.bind(numero_queue, PacketHandling::handle_packet).
+            Prende in input un oggetto di classe Packet e
+            verifica se e' presente la flag di debug.
+            Se e' presente stampa i dati del pacchetto
+            a video e scrive il pacchetto nel file pcap.
+            Infine, facendo uso dell'oggetto di classe
+            Shield, decreta il verdetto del pacchetto.
+
+            Args:
+                pkt (obj): A [Packet](https://github.com/kti/python-netfilterqueue#packet-objects) object.
+        """
         payload = pkt.get_payload()
         payload_hex = payload.hex()
 

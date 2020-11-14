@@ -1,4 +1,4 @@
-# PCAP export module
+"""PCAP export module"""
 import time
 import binascii
 import os
@@ -6,12 +6,17 @@ import os
 
 class PCAP:
 
-    # Metodo costruttore dell'oggetto.
-    # Al momento distrugge il vecchio file PCAP,
-    # crea un header PCAP e lo scrive nel file.
-    # Prende in input un oggetto di classe Log, un oggetto di classe Handling
-    # e una stringa contenente il nome del file di output.
     def __init__(self, log, handling, filename="dropped_packets.pcap"):
+        """ Metodo costruttore dell'oggetto.
+
+            Al momento distrugge il vecchio file PCAP,
+            crea un header PCAP e lo scrive nel file.
+
+            Args:
+                log (obj): A [Log](my_logging.html#ips-cc.my_logging.Log) object.
+                handling (obj): A [PacketHandling](packet_handling.html#ips-cc.packet_handling.PacketHandling) object.
+                filename (string): The output filename.
+        """
         self.log = log
         self.handling = handling
         log.uplog("Starting PCAP exporting Module")
@@ -29,23 +34,30 @@ class PCAP:
         # Reporting self to the Handling object
         handling.pcap_hook(self)
 
-        # PCAP file header. Generated with the make_header method.
         self.header = b'\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\xe4\x00\x00\x00'
+        """PCAP file header. Generated with the `PCAP.make_header` method."""
+
         self.outputFile.write(self.header)
         # Flush is used to confirm the writing to the file.
         self.outputFile.flush()
         os.fsync(self.outputFile.fileno())
 
-    # Funzione distruttore dell'oggetto: chiude il file di output.
     def __del__(self):
+        """Funzione distruttore dell'oggetto: chiude il file di output"""
         if self.outputFile is not None:
             self.outputFile.close()
 
-    # Metodo che ritorna i bytes dell'header di un file PCAP.
-    #
-    # Documentazione di riferimento:
-    # http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&modeAsFormat=html/ascii&type=ascii#packet_record
     def make_header(self):
+        """ Metodo che ritorna i bytes dell'header di un file PCAP
+            in formato Little Endian.
+
+            Documentazione di riferimento:
+
+            http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&modeAsFormat=html/ascii&type=ascii#packet_record
+
+            Returns:
+                str: The bytes string of the header of a PCAP file.
+        """
         header = 'D4C3B2A1'   # Magic Number in little endian
         header += '02000400'  # Version 2.4
         header += '00000000'  # Reserved 1
@@ -62,11 +74,16 @@ class PCAP:
         header_byte = binascii.unhexlify(header)
         return header_byte
 
-    # Metodo che aggiunge un record al file PCAP.
-    # Per ogni pacchetto da aggiungere e' necessario un record.
-    # Richiede in ingresso una stringa contenente
-    # un pacchetto IP (In genere inizia con '450000').
     def make_packet_record(self, IP_packet):
+        """ Metodo che aggiunge un record al file PCAP.
+
+            Per ogni pacchetto da aggiungere e' necessario un record.
+            Richiede in ingresso una stringa contenente
+            un pacchetto IP (In genere inizia con '450000').
+
+            Args:
+                IP_packet (string): A string in hex format.
+        """
         # TODO : hex può ritornare 0x3322 (elimina gli zero davanti)
         # si puo' usare la soluzione di sotto?
         # Seconds and microseconds

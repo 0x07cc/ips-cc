@@ -1,23 +1,46 @@
-# Tools module
+"""Tools module"""
 import os
 import subprocess
 import sys
 import socket
 
-# Funzione che calcola la lunghezza dell'header IPv4
-# basandosi sul valore IHL (Internet Header Length).
-#
-# Documentazione di riferimento:
-# https://en.wikipedia.org/wiki/IPv4#IHL
+
 def calcola_lunghezza_header(carattere):
+    """ Funzione che calcola la lunghezza dell'header IPv4
+        basandosi sul valore IHL (Internet Header Length).
+
+        Documentazione di riferimento:
+        https://en.wikipedia.org/wiki/IPv4#IHL
+
+        Args:
+            carattere (str): Un carattere in esadecimale.
+
+        Returns:
+            int: La lunghezza dell'header.
+        """
     lunghezza = 20
     ihl = int(carattere, 16)
     lunghezza = (ihl * 32) // 8
     return lunghezza
 
-# Funzione che ritorna la stringa dell'indirizzo IPv4 (dotted)
-# basandosi sulla stringa esadecimale passatagli.
+
 def IPv4HexToDotted(stringa_hex):
+    """ Funzione che ritorna la stringa dell'indirizzo IPv4 (dotted)
+        basandosi sulla stringa esadecimale passatagli.
+
+        Args:
+            stringa_hex (str): Una stringa esadecimale.
+
+        Returns:
+            str: L'indirizzo IPv4 in dotted notation.
+
+        Raises:
+            ValueError: Se la lunghezza di stringa_hex non e' 8.
+
+        Example:
+            >>> print(IPv4HexToDotted("7F006401"))
+            127.0.100.1
+        """
     if len(stringa_hex) != 8:
         raise ValueError
     primo = int(stringa_hex[0:2], 16)
@@ -26,17 +49,24 @@ def IPv4HexToDotted(stringa_hex):
     quarto = int(stringa_hex[6:8], 16)
     return '%d.%d.%d.%d' % (primo, secondo, terzo, quarto)
 
-# Funzione che controlla se l'utente che ha avviato lo script e' root.
+
 def is_root():
+    """ Funzione che controlla se l'utente che ha avviato lo script e' root.
+        Returns:
+            bool: `True` if the user is `root`, `False` otherwise."""
     if os.geteuid() != 0:
         return False
     return True
 
-# Funzione che ritorna la stringa contenente l'output del comando
-# 'iptables -L -n'. Se il comando fallisce, il programma termina
-# in quanto non e' possibile determinare se ci sono regole in
-# input o in output. # TODO aggiornare se ricevo Log
+
 def list_iptables():
+    """ Funzione che ritorna la stringa contenente l'output del comando
+        `iptables -L -n`.
+
+        Se il comando fallisce, il programma termina in quanto non e'
+        possibile determinare se ci sono regole in input o in output.
+        Returns:
+            str: iptables rules (output of the `iptables -L -n` command)."""
     try:
         command = ["iptables", "-L", "-n"]
         process = subprocess.run(command, stdout=subprocess.PIPE, timeout=5)
@@ -49,9 +79,12 @@ def list_iptables():
         # Error while running "iptables -L -n". The application will shut down.
         exit(-1)
 
-# Funzione che ritorna True se il programma e'
-# stato avviato passando l'argomento -d o --debug
+
 def is_debug():
+    """ Funzione che controlla se il programma e' stato avviato passando
+        l'argomento -d o \--debug.
+        Returns:
+            bool: `True` if `sys.argv` contains `-d` o `--debug`, `False` otherwise."""
     if len(sys.argv) > 1:
         if "-d" in sys.argv or "--debug" in sys.argv:
             return True
@@ -61,6 +94,7 @@ def is_debug():
 # IPSorgente: FF113344 Porta: O8AE
 def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
                PortaDestinazione, newACK, newSeq, rst_ack):
+    """At least it works..."""
 
     # IP Header with no checksum set
     header = {}
@@ -173,9 +207,17 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     # TODO spostare invio in Handling?
     s.sendto(packet, (destIPV4, 0))
 
-# Calculates the checksum for an IP header
-# Author: Grant Curell
+
 def checksum_IPv4_header(ip_header):
+    """ Calculates the checksum for an IP header.
+
+        Author: Grant Curell.
+
+        Args:
+            ip_header (dict): A dict of bytes.
+
+        Returns:
+            str: Checksum in exadecimal, preceded by 0x, 6 characters long."""
     cksum = 0
     pointer = 0
     size = len(ip_header)
@@ -195,6 +237,7 @@ def checksum_IPv4_header(ip_header):
 
 # TODO Docs
 def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length):
+    """FIXME"""
     # TODO rischio che la porta del client sia uguale ad una di
     # quelle su cui vige una regola. Basso rischio.
 

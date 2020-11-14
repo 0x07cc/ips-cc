@@ -1,16 +1,34 @@
-# Statistics module
+""" Statistics module
+
+    Single-threaded module: it makes use of two counters instead of time.
+
+    `PRINT_EACH_DROPPED_PACKETS` and `PRINT_EACH_ACCEPTED_PACKETS` are
+    the parameters that trigger the `Stats.print_stats` method.
+"""
 
 # Parameters
 # TODO EVERY al posto di EACH
-PRINT_EACH_DROPPED_PACKETS = 5
-PRINT_EACH_ACCEPTED_PACKETS = 500
-PRINT_AFTER_QUEUED_PACKETS = 9
+PRINT_EACH_DROPPED_PACKETS: int = 5
+""" Statistics will be printed every `PRINT_EACH_DROPPED_PACKETS`
+    dropped packets."""
+
+PRINT_EACH_ACCEPTED_PACKETS: int = 500
+""" Statistics will be printed every `PRINT_EACH_ACCEPTED_PACKETS`
+    accepted packets."""
+
+PRINT_AFTER_QUEUED_PACKETS: int = 9
+""" Configurable threshold for `Number of currently queued packets` field
+    got from `/proc/net/netfilter/nfnetlink_queue`."""
 
 
 class Stats:
-    # Metodo costruttore dell'oggetto.
-    # Prende in input un oggetto di classe Log e uno di classe Handling.
+
     def __init__(self, log, handling):
+        """ Metodo costruttore dell'oggetto.
+            Args:
+                log (obj): A [Log](my_logging.html#ips-cc.my_logging.Log) object.
+                handling (obj): A [PacketHandling](packet_handling.html#ips-cc.packet_handling.PacketHandling) object.
+        """
         self.log = log
         log.uplog("Starting Statistics Module")
         # Comunico a Handling il riferimento di Stats
@@ -31,8 +49,8 @@ class Stats:
         # self.log.uplog("Total Accepted Packets: " + str(self.acceptedPkt))
         # self.log.uplog("Total Dropped Packets : " + str(self.droppedPkt))
 
-    # Metodo chiamato ogni volta che un pacchetto viene droppato
     def add_dropped(self):
+        """Metodo chiamato ogni volta che un pacchetto viene droppato."""
         self.droppedPkt += 1
         self.droppedDelta += 1
         # Stampa le stats se e' stato superato il limite di pacchetti droppati
@@ -40,8 +58,8 @@ class Stats:
             self.droppedDelta = 0  # Reset contatore
             self.print_stats()
 
-    # Metodo chiamato ogni volta che un pacchetto viene accettato
     def add_accepted(self):
+        """Metodo chiamato ogni volta che un pacchetto viene accettato."""
         self.acceptedPkt += 1
         self.acceptedDelta += 1
         # Stampa le stats se e' stato superato il limite di pacchetti accettati
@@ -49,9 +67,9 @@ class Stats:
             self.acceptedDelta = 0  # Reset contatore
             self.print_stats()
 
-    # Metodo che stampa a video quanti pacchetti sono stati accettati,
-    # quanti ne sono stati droppati e la percentuale di drop.
     def print_stats(self):
+        """ Metodo che stampa a video quanti pacchetti sono stati accettati,
+            quanti ne sono stati droppati e la percentuale di drop."""
         totalPkt = self.acceptedPkt + self.droppedPkt
         # Se il totale e' zero, non ha senso stampare nulla.
         if totalPkt != 0:
@@ -72,13 +90,15 @@ class Stats:
 
             self.log.uplog(stats_string)  # TODO Future: DEFENCE
 
-    # Metodo che apre il file nfnetlink_queue
-    # ed estrae le statistiche della coda.
-    # TODO : E se ci sono piu' code?
-    #
-    # Documentazione di riferimento:
-    # https://github.com/kti/python-netfilterqueue/blob/master/README.rst#usage
     def apriFileQueue(self):
+        """ Metodo che apre il file nfnetlink_queue
+            ed estrae le statistiche della coda.
+
+            Documentazione di riferimento:
+
+            https://github.com/kti/python-netfilterqueue/blob/master/README.rst#usage
+
+            TODO : E se ci sono piu' code?"""
         # Apertura del file
         try:
             queueFile = open("/proc/net/netfilter/nfnetlink_queue", "r")
