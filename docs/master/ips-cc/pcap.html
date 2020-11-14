@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>ips-cc.pcap API documentation</title>
+<meta name="description" content="PCAP export module" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github-gist.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:25%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:74%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ips-cc.pcap</code></h1>
+</header>
+<section id="section-intro">
+<p>PCAP export module</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;PCAP export module&#34;&#34;&#34;
+import time
+import binascii
+import os
+
+
+class PCAP:
+
+    def __init__(self, log, handling, filename=&#34;dropped_packets.pcap&#34;):
+        &#34;&#34;&#34; Metodo costruttore dell&#39;oggetto.
+
+            Al momento distrugge il vecchio file PCAP,
+            crea un header PCAP e lo scrive nel file.
+
+            Args:
+                log (obj): A [Log](my_logging.html#ips-cc.my_logging.Log) object.
+                handling (obj): A [PacketHandling](packet_handling.html#ips-cc.packet_handling.PacketHandling) object.
+                filename (string): The output filename.
+        &#34;&#34;&#34;
+        self.log = log
+        self.handling = handling
+        log.uplog(&#34;Starting PCAP exporting Module&#34;)
+
+        # File opening (mode write binary).
+        # If it fails, pcap exporter cannot work.
+        try:
+            self.outputFile = open(filename, &#34;wb&#34;)
+        except OSError:
+            log.uplog(&#34;Error while opening &#34; + filename)
+            log.uplog(&#34;PCAP export will shutdown&#34;)
+            self.outputFile = None
+            return
+
+        # Reporting self to the Handling object
+        handling.pcap_hook(self)
+
+        self.header = b&#39;\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\xe4\x00\x00\x00&#39;
+        &#34;&#34;&#34;PCAP file header. Generated with the `PCAP.make_header` method.&#34;&#34;&#34;
+
+        self.outputFile.write(self.header)
+        # Flush is used to confirm the writing to the file.
+        self.outputFile.flush()
+        os.fsync(self.outputFile.fileno())
+
+    def __del__(self):
+        &#34;&#34;&#34;Funzione distruttore dell&#39;oggetto: chiude il file di output&#34;&#34;&#34;
+        if self.outputFile is not None:
+            self.outputFile.close()
+
+    def make_header(self):
+        &#34;&#34;&#34; Metodo che ritorna i bytes dell&#39;header di un file PCAP
+            in formato Little Endian.
+
+            Documentazione di riferimento:
+
+            http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&amp;modeAsFormat=html/ascii&amp;type=ascii#packet_record
+
+            Returns:
+                str: The bytes string of the header of a PCAP file.
+        &#34;&#34;&#34;
+        header = &#39;D4C3B2A1&#39;   # Magic Number in little endian
+        header += &#39;02000400&#39;  # Version 2.4
+        header += &#39;00000000&#39;  # Reserved 1
+        header += &#39;00000000&#39;  # Reserved 2
+
+        # SnapLen: maximum number of octets captured from each packet
+        header += &#39;00000400&#39;
+
+        # LinkType: Raw IPv4
+        # Documentazione di riferimento:
+        # http://www.tcpdump.org/linktypes.html
+        header += &#39;E4000000&#39;  # E4 (Hex) = 228 (Dec)
+
+        header_byte = binascii.unhexlify(header)
+        return header_byte
+
+    def make_packet_record(self, IP_packet):
+        &#34;&#34;&#34; Metodo che aggiunge un record al file PCAP.
+
+            Per ogni pacchetto da aggiungere e&#39; necessario un record.
+            Richiede in ingresso una stringa contenente
+            un pacchetto IP (In genere inizia con &#39;450000&#39;).
+
+            Args:
+                IP_packet (string): A string in hex format.
+        &#34;&#34;&#34;
+        # TODO : hex può ritornare 0x3322 (elimina gli zero davanti)
+        # si puo&#39; usare la soluzione di sotto?
+        # Seconds and microseconds
+        time_hex = hex(int(time.time()))[2:10]  # Seconds from epoch
+        time_1 = time_hex[0:2]
+        time_2 = time_hex[2:4]
+        time_3 = time_hex[4:6]
+        time_4 = time_hex[6:8]
+        time_dec = &#39;00000000&#39;  # We don&#39;t care about ms
+        # Reversed order (Little Endian)
+        packet_record = time_4 + time_3 + time_2 + time_1 + time_dec
+
+        # Packet Length
+        # IP_packet is a string, a byte is represented by two characters.
+        packet_length_int = len(IP_packet) // 2
+        packet_length_hex = hex(packet_length_int)[2:]
+        # Fill the rest with zero
+        packet_length = &#39;0&#39; * (8 - len(packet_length_hex)) + packet_length_hex
+        # Reversed order (Little Endian)
+        packet_length_le = &#34;&#34;
+        packet_length_le = packet_length[6:8]
+        packet_length_le += packet_length[4:6]
+        packet_length_le += packet_length[2:4]
+        packet_length_le += packet_length[0:2]
+        packet_record += packet_length_le  # Captured Packet Length
+        packet_record += packet_length_le  # Original Packet Length
+
+        # IP Packet
+        packet_record += IP_packet
+
+        # Converting to bytes and writing to the file.
+        packet_record_bytes = binascii.unhexlify(packet_record)
+        self.outputFile.write(packet_record_bytes)
+        # Flush is used to confirm the writing to the file.
+        self.outputFile.flush()
+        os.fsync(self.outputFile.fileno())</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ips-cc.pcap.PCAP"><code class="flex name class">
+<span>class <span class="ident">PCAP</span></span>
+<span>(</span><span>log, handling, filename='dropped_packets.pcap')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Metodo costruttore dell'oggetto.</p>
+<p>Al momento distrugge il vecchio file PCAP,
+crea un header PCAP e lo scrive nel file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>log</code></strong> :&ensp;<code>obj</code></dt>
+<dd>A <a href="my_logging.html#ips-cc.my_logging.Log">Log</a> object.</dd>
+<dt><strong><code>handling</code></strong> :&ensp;<code>obj</code></dt>
+<dd>A <a href="packet_handling.html#ips-cc.packet_handling.PacketHandling">PacketHandling</a> object.</dd>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code></dt>
+<dd>The output filename.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PCAP:
+
+    def __init__(self, log, handling, filename=&#34;dropped_packets.pcap&#34;):
+        &#34;&#34;&#34; Metodo costruttore dell&#39;oggetto.
+
+            Al momento distrugge il vecchio file PCAP,
+            crea un header PCAP e lo scrive nel file.
+
+            Args:
+                log (obj): A [Log](my_logging.html#ips-cc.my_logging.Log) object.
+                handling (obj): A [PacketHandling](packet_handling.html#ips-cc.packet_handling.PacketHandling) object.
+                filename (string): The output filename.
+        &#34;&#34;&#34;
+        self.log = log
+        self.handling = handling
+        log.uplog(&#34;Starting PCAP exporting Module&#34;)
+
+        # File opening (mode write binary).
+        # If it fails, pcap exporter cannot work.
+        try:
+            self.outputFile = open(filename, &#34;wb&#34;)
+        except OSError:
+            log.uplog(&#34;Error while opening &#34; + filename)
+            log.uplog(&#34;PCAP export will shutdown&#34;)
+            self.outputFile = None
+            return
+
+        # Reporting self to the Handling object
+        handling.pcap_hook(self)
+
+        self.header = b&#39;\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\xe4\x00\x00\x00&#39;
+        &#34;&#34;&#34;PCAP file header. Generated with the `PCAP.make_header` method.&#34;&#34;&#34;
+
+        self.outputFile.write(self.header)
+        # Flush is used to confirm the writing to the file.
+        self.outputFile.flush()
+        os.fsync(self.outputFile.fileno())
+
+    def __del__(self):
+        &#34;&#34;&#34;Funzione distruttore dell&#39;oggetto: chiude il file di output&#34;&#34;&#34;
+        if self.outputFile is not None:
+            self.outputFile.close()
+
+    def make_header(self):
+        &#34;&#34;&#34; Metodo che ritorna i bytes dell&#39;header di un file PCAP
+            in formato Little Endian.
+
+            Documentazione di riferimento:
+
+            http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&amp;modeAsFormat=html/ascii&amp;type=ascii#packet_record
+
+            Returns:
+                str: The bytes string of the header of a PCAP file.
+        &#34;&#34;&#34;
+        header = &#39;D4C3B2A1&#39;   # Magic Number in little endian
+        header += &#39;02000400&#39;  # Version 2.4
+        header += &#39;00000000&#39;  # Reserved 1
+        header += &#39;00000000&#39;  # Reserved 2
+
+        # SnapLen: maximum number of octets captured from each packet
+        header += &#39;00000400&#39;
+
+        # LinkType: Raw IPv4
+        # Documentazione di riferimento:
+        # http://www.tcpdump.org/linktypes.html
+        header += &#39;E4000000&#39;  # E4 (Hex) = 228 (Dec)
+
+        header_byte = binascii.unhexlify(header)
+        return header_byte
+
+    def make_packet_record(self, IP_packet):
+        &#34;&#34;&#34; Metodo che aggiunge un record al file PCAP.
+
+            Per ogni pacchetto da aggiungere e&#39; necessario un record.
+            Richiede in ingresso una stringa contenente
+            un pacchetto IP (In genere inizia con &#39;450000&#39;).
+
+            Args:
+                IP_packet (string): A string in hex format.
+        &#34;&#34;&#34;
+        # TODO : hex può ritornare 0x3322 (elimina gli zero davanti)
+        # si puo&#39; usare la soluzione di sotto?
+        # Seconds and microseconds
+        time_hex = hex(int(time.time()))[2:10]  # Seconds from epoch
+        time_1 = time_hex[0:2]
+        time_2 = time_hex[2:4]
+        time_3 = time_hex[4:6]
+        time_4 = time_hex[6:8]
+        time_dec = &#39;00000000&#39;  # We don&#39;t care about ms
+        # Reversed order (Little Endian)
+        packet_record = time_4 + time_3 + time_2 + time_1 + time_dec
+
+        # Packet Length
+        # IP_packet is a string, a byte is represented by two characters.
+        packet_length_int = len(IP_packet) // 2
+        packet_length_hex = hex(packet_length_int)[2:]
+        # Fill the rest with zero
+        packet_length = &#39;0&#39; * (8 - len(packet_length_hex)) + packet_length_hex
+        # Reversed order (Little Endian)
+        packet_length_le = &#34;&#34;
+        packet_length_le = packet_length[6:8]
+        packet_length_le += packet_length[4:6]
+        packet_length_le += packet_length[2:4]
+        packet_length_le += packet_length[0:2]
+        packet_record += packet_length_le  # Captured Packet Length
+        packet_record += packet_length_le  # Original Packet Length
+
+        # IP Packet
+        packet_record += IP_packet
+
+        # Converting to bytes and writing to the file.
+        packet_record_bytes = binascii.unhexlify(packet_record)
+        self.outputFile.write(packet_record_bytes)
+        # Flush is used to confirm the writing to the file.
+        self.outputFile.flush()
+        os.fsync(self.outputFile.fileno())</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="ips-cc.pcap.PCAP.header"><code class="name">var <span class="ident">header</span></code></dt>
+<dd>
+<div class="desc"><p>PCAP file header. Generated with the <code><a title="ips-cc.pcap.PCAP.make_header" href="#ips-cc.pcap.PCAP.make_header">PCAP.make_header()</a></code> method.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="ips-cc.pcap.PCAP.make_header"><code class="name flex">
+<span>def <span class="ident">make_header</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Metodo che ritorna i bytes dell'header di un file PCAP
+in formato Little Endian.</p>
+<p>Documentazione di riferimento:</p>
+<p><a href="http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&amp;modeAsFormat=html/ascii&amp;type=ascii#packet_record">http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&amp;modeAsFormat=html/ascii&amp;type=ascii#packet_record</a></p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The bytes string of the header of a PCAP file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_header(self):
+    &#34;&#34;&#34; Metodo che ritorna i bytes dell&#39;header di un file PCAP
+        in formato Little Endian.
+
+        Documentazione di riferimento:
+
+        http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/pcapng/pcapng/master/draft-gharris-opsawg-pcap.xml&amp;modeAsFormat=html/ascii&amp;type=ascii#packet_record
+
+        Returns:
+            str: The bytes string of the header of a PCAP file.
+    &#34;&#34;&#34;
+    header = &#39;D4C3B2A1&#39;   # Magic Number in little endian
+    header += &#39;02000400&#39;  # Version 2.4
+    header += &#39;00000000&#39;  # Reserved 1
+    header += &#39;00000000&#39;  # Reserved 2
+
+    # SnapLen: maximum number of octets captured from each packet
+    header += &#39;00000400&#39;
+
+    # LinkType: Raw IPv4
+    # Documentazione di riferimento:
+    # http://www.tcpdump.org/linktypes.html
+    header += &#39;E4000000&#39;  # E4 (Hex) = 228 (Dec)
+
+    header_byte = binascii.unhexlify(header)
+    return header_byte</code></pre>
+</details>
+</dd>
+<dt id="ips-cc.pcap.PCAP.make_packet_record"><code class="name flex">
+<span>def <span class="ident">make_packet_record</span></span>(<span>self, IP_packet)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Metodo che aggiunge un record al file PCAP.</p>
+<p>Per ogni pacchetto da aggiungere e' necessario un record.
+Richiede in ingresso una stringa contenente
+un pacchetto IP (In genere inizia con '450000').</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>IP_packet</code></strong> :&ensp;<code>string</code></dt>
+<dd>A string in hex format.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_packet_record(self, IP_packet):
+    &#34;&#34;&#34; Metodo che aggiunge un record al file PCAP.
+
+        Per ogni pacchetto da aggiungere e&#39; necessario un record.
+        Richiede in ingresso una stringa contenente
+        un pacchetto IP (In genere inizia con &#39;450000&#39;).
+
+        Args:
+            IP_packet (string): A string in hex format.
+    &#34;&#34;&#34;
+    # TODO : hex può ritornare 0x3322 (elimina gli zero davanti)
+    # si puo&#39; usare la soluzione di sotto?
+    # Seconds and microseconds
+    time_hex = hex(int(time.time()))[2:10]  # Seconds from epoch
+    time_1 = time_hex[0:2]
+    time_2 = time_hex[2:4]
+    time_3 = time_hex[4:6]
+    time_4 = time_hex[6:8]
+    time_dec = &#39;00000000&#39;  # We don&#39;t care about ms
+    # Reversed order (Little Endian)
+    packet_record = time_4 + time_3 + time_2 + time_1 + time_dec
+
+    # Packet Length
+    # IP_packet is a string, a byte is represented by two characters.
+    packet_length_int = len(IP_packet) // 2
+    packet_length_hex = hex(packet_length_int)[2:]
+    # Fill the rest with zero
+    packet_length = &#39;0&#39; * (8 - len(packet_length_hex)) + packet_length_hex
+    # Reversed order (Little Endian)
+    packet_length_le = &#34;&#34;
+    packet_length_le = packet_length[6:8]
+    packet_length_le += packet_length[4:6]
+    packet_length_le += packet_length[2:4]
+    packet_length_le += packet_length[0:2]
+    packet_record += packet_length_le  # Captured Packet Length
+    packet_record += packet_length_le  # Original Packet Length
+
+    # IP Packet
+    packet_record += IP_packet
+
+    # Converting to bytes and writing to the file.
+    packet_record_bytes = binascii.unhexlify(packet_record)
+    self.outputFile.write(packet_record_bytes)
+    # Flush is used to confirm the writing to the file.
+    self.outputFile.flush()
+    os.fsync(self.outputFile.fileno())</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h3 style="border-bottom: 1px solid #ddd;">IPS-CC Documentation</h3>
+<code><a href="README.html">README.md</a></code>
+<code><a href="README.it.html">README.it.md</a></code>
+<!--<h1>Index</h1>-->
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ips-cc" href="index.html">ips-cc</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ips-cc.pcap.PCAP" href="#ips-cc.pcap.PCAP">PCAP</a></code></h4>
+<ul class="">
+<li><code><a title="ips-cc.pcap.PCAP.header" href="#ips-cc.pcap.PCAP.header">header</a></code></li>
+<li><code><a title="ips-cc.pcap.PCAP.make_header" href="#ips-cc.pcap.PCAP.make_header">make_header</a></code></li>
+<li><code><a title="ips-cc.pcap.PCAP.make_packet_record" href="#ips-cc.pcap.PCAP.make_packet_record">make_packet_record</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>
