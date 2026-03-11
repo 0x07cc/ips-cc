@@ -10,9 +10,10 @@ class PacketHandling:
     # di classe PCAP e un valore booleano
     # utilizzato per determinare se
     # stampare o meno le linee di debug.
-    def __init__(self, log, shield, debug=False, rst_ack=0):
+    def __init__(self, log, shield, filtering_direction, debug=False, rst_ack=0):
         self.log = log
         self.shield = shield
+        self.filtering_direction = filtering_direction
         self.debug = debug
         self.rst_ack = rst_ack  # 0: drop; 1: RST in reply; 2: ACK in reply
         self.stats = None
@@ -134,7 +135,8 @@ class PacketHandling:
                 if self.pcap:
                     self.pcap.make_packet_record(payload_hex)
 
-            self.log.uplog("Packet dropped")
+            if self.debug:
+                self.log.uplog("Packet dropped")
 
             # Verifico se devo solo droppare il pacchetto (rst_ack == 0);
             # dropparlo e inviare un pacchetto RST (rst_ack == 1) oppure
@@ -145,9 +147,10 @@ class PacketHandling:
 
                 [ipSource, ipDest, portaSource, portaDest, newAck, newSeq] = utils.genera_argomenti(
                     payload_hex, inizioTCP, self.shield, self.rst_ack,
-                    total_packet_length - dim_header)
+                    total_packet_length - dim_header, self.filtering_direction)
 
-                utils.genera_RST(ipSource, ipDest, portaSource, portaDest, newAck, newSeq, self.rst_ack)
+                utils.genera_RST(ipSource, ipDest, portaSource, portaDest,
+                                 newAck, newSeq, self.rst_ack)
         else:
             pkt.accept()
             if self.stats:

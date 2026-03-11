@@ -1,8 +1,9 @@
 # Tools module
 import os
-import subprocess
 import sys
 import socket
+import json
+
 
 # Funzione che calcola la lunghezza dell'header IPv4
 # basandosi sul valore IHL (Internet Header Length).
@@ -15,6 +16,7 @@ def calcola_lunghezza_header(carattere):
     lunghezza = (ihl * 32) // 8
     return lunghezza
 
+
 # Funzione che ritorna la stringa dell'indirizzo IPv4 (dotted)
 # basandosi sulla stringa esadecimale passatagli.
 def IPv4HexToDotted(stringa_hex):
@@ -26,28 +28,32 @@ def IPv4HexToDotted(stringa_hex):
     quarto = int(stringa_hex[6:8], 16)
     return '%d.%d.%d.%d' % (primo, secondo, terzo, quarto)
 
+
 # Funzione che controlla se l'utente che ha avviato lo script e' root.
 def is_root():
     if os.geteuid() != 0:
         return False
     return True
 
-# Funzione che ritorna la stringa contenente l'output del comando
-# 'iptables -L -n'. Se il comando fallisce, il programma termina
-# in quanto non e' possibile determinare se ci sono regole in
-# input o in output. # TODO aggiornare se ricevo Log
-def list_iptables():
+
+# Funzione che apre il file di configurazione in JSON
+# e ritorna la queue_number (int), rules (list) e
+# filtering_direction (str)
+def read_config(config_file):
     try:
-        command = ["iptables", "-L", "-n"]
-        process = subprocess.run(command, stdout=subprocess.PIPE, timeout=5)
+        with open(config_file, "r") as config_obj:
+            config_dict = json.load(config_obj)
+            queue_number = int(config_dict["queue_number"])
+            filtering_direction = str(config_dict["filtering_direction"])
+            rules = config_dict["rules"]
+        return queue_number, rules, filtering_direction
     except FileNotFoundError:
+        print(f"File {config_file} not found!")
         exit(-1)
-    if process.returncode == 0:
-        return process.stdout.decode()
-    else:
-        # TODO Se ricevo l'oggetto log, posso stampare un messaggio d'errore.
-        # Error while running "iptables -L -n". The application will shut down.
+    except (ValueError, KeyError, json.decoder.JSONDecodeError):
+        print(f"Syntax Error in file {config_file}!")
         exit(-1)
+
 
 # Funzione che ritorna True se il programma e'
 # stato avviato passando l'argomento -d o --debug
@@ -56,6 +62,7 @@ def is_debug():
         if "-d" in sys.argv or "--debug" in sys.argv:
             return True
     return False
+
 
 # TODO Docs
 # IPSorgente: FF113344 Porta: O8AE
@@ -173,6 +180,7 @@ def genera_RST(IPSorgente, IPDestinatario, PortaSorgente,
     # TODO spostare invio in Handling?
     s.sendto(packet, (destIPV4, 0))
 
+
 # Calculates the checksum for an IP header
 # Author: Grant Curell
 def checksum_IPv4_header(ip_header):
@@ -193,8 +201,9 @@ def checksum_IPv4_header(ip_header):
     # Filling with zero (e.g. 0xb1a => 0x0b1a)
     return "0x" + (6 - lenght) * "0" + cksum[2:]
 
+
 # TODO Docs
-def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length):
+def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length, filtering_direction):
     # TODO rischio che la porta del client sia uguale ad una di
     # quelle su cui vige una regola. Basso rischio.
 
@@ -204,47 +213,38 @@ def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length):
     portaSource = payload_hex[startTCPhex:startTCPhex + 4]
     portaDest = payload_hex[startTCPhex + 4:startTCPhex + 8]
 
-    # TODO FIXME
-    if(True):
-        rule = shield.rules[int(portaDest, 16)]
-        if rule == "INPUT":
+    if filtering_direction == "inbound":
 
-            oldAck = [0, 0, 0, 0]
-            oldAck[0] = int(payload_hex[startTCPhex + 16:startTCPhex + 18], 16)
-            oldAck[1] = int(payload_hex[startTCPhex + 18:startTCPhex + 20], 16)
-            oldAck[2] = int(payload_hex[startTCPhex + 20:startTCPhex + 22], 16)
-            oldAck[3] = int(payload_hex[startTCPhex + 22:startTCPhex + 24], 16)
+        oldAck = [0, 0, 0, 0]
+        oldAck[0] = int(payload_hex[startTCPhex + 16:startTCPhex + 18], 16)
+        oldAck[1] = int(payload_hex[startTCPhex + 18:startTCPhex + 20], 16)
+        oldAck[2] = int(payload_hex[startTCPhex + 20:startTCPhex + 22], 16)
+        oldAck[3] = int(payload_hex[startTCPhex + 22:startTCPhex + 24], 16)
 
-            if rst_ack == 1:
-                # RST in risposta ad un pacchetto bloccato in input
-                newAck = [0, 0, 0, 0]
-                newSeq = oldAck
+        if rst_ack == 1:
+            # RST in risposta ad un pacchetto bloccato in input
+            newAck = [0, 0, 0, 0]
+            newSeq = oldAck
 
-            if rst_ack == 2:
-                # ACK in risposta ad un pacchetto bloccato in input
-                newSeq = oldAck
+        if rst_ack == 2:
+            # ACK in risposta ad un pacchetto bloccato in input
+            newSeq = oldAck
 
-                oldSeqN = payload_hex[startTCPhex + 8: startTCPhex + 16]
-                oldSeqN = int(oldSeqN, 16)
-                oldSeqN = hex(oldSeqN + data_length)
-                oldSeq = [0, 0, 0, 0]
-                oldSeq[0] = int(oldSeqN[2:4], 16)
-                oldSeq[1] = int(oldSeqN[4:6], 16)
-                oldSeq[2] = int(oldSeqN[6:8], 16)
-                oldSeq[3] = int(oldSeqN[8:10], 16)
+            oldSeqN = payload_hex[startTCPhex + 8: startTCPhex + 16]
+            oldSeqN = int(oldSeqN, 16)
+            oldSeqN = hex(oldSeqN + data_length)
+            oldSeq = [0, 0, 0, 0]
+            oldSeq[0] = int(oldSeqN[2:4], 16)
+            oldSeq[1] = int(oldSeqN[4:6], 16)
+            oldSeq[2] = int(oldSeqN[6:8], 16)
+            oldSeq[3] = int(oldSeqN[8:10], 16)
 
-                newAck = oldSeq
-            # Il return ha i valori IP e Porte invertiti perche'
-            # il pacchetto e' stato bloccato in input.
-            return ipDest, ipSource, portaDest, portaSource, newAck, newSeq
-
-        # TODO controlla il caso rule == OUTPUT.
-        # In teoria è un caso falsato.
-
+            newAck = oldSeq
+        # Il return ha i valori IP e Porte invertiti perche'
+        # il pacchetto e' stato bloccato in input.
+        return ipDest, ipSource, portaDest, portaSource, newAck, newSeq
     else:
-        rule = shield.rules[int(portaSource, 16)]
-
-        if rule == "OUTPUT":
+        if filtering_direction == "outbound":
 
             oldAck = [0, 0, 0, 0]
             oldAck[0] = int(payload_hex[startTCPhex + 16:startTCPhex + 18], 16)
@@ -267,10 +267,6 @@ def genera_argomenti(payload_hex, inizioTCP, shield, rst_ack, data_length):
                 # ACK in risposta ad un pacchetto bloccato in output
                 newSeq = oldSeq
                 newAck = oldAck
-
             return ipSource, ipDest, portaSource, portaDest, newAck, newSeq
 
         return None, None, None, None, None, None
-
-        # TODO controlla il caso rule == INPUT.
-        # In teoria è un caso falsato.

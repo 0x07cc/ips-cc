@@ -1,0 +1,8 @@
+{
+    "queue_number": 33,
+    "filtering_direction": "inbound",
+    "rules": [
+        "CC{\\w+}",
+        "CCRU{\\w+}"
+    ]
+}
