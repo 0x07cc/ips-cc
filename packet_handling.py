@@ -62,23 +62,28 @@ class PacketHandling:
             return
 
         # Calcolo Header Length: Uso campo IHL dell'header IPv4
-        inizioTCP = utils.calcola_lunghezza_header(payload_hex[1])
+        inizioL4 = utils.calcola_lunghezza_header(payload_hex[1])
 
         # TODO: Da qui implementare comportamento se il pacchetto non e' TCP.
         # Usare Protocol (ip.proto) di IPv4. 0x06 = TCP
         # https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
         # Se il pacchetto ricevuto non e' TCP, lo accetto TODO FIXME
-        if payload_hex[19] != '6':
-            self.log.uplog("Received a non-TCP packet, accepting it")
-            pkt.accept()
+        if payload_hex[18:20] != '06' and payload_hex[18:20] != '11':
+            self.log.uplog("Received a non-TCP/UDP packet, dropping it")
+            pkt.drop()
             if self.stats:
-                self.stats.add_accepted()
+                self.stats.add_dropped()
             return
 
-        # Uso campo Data Offset dell'header TCP
-        lunghezza_header_TCP = utils.calcola_lunghezza_header(payload_hex[inizioTCP * 2 + 24])
-        # Dimensione totale degli header IPv4 + TCP, da qui iniziano i dati.
-        dim_header = inizioTCP + lunghezza_header_TCP
+        if payload_hex[18:20] == '06':
+            # Uso campo Data Offset dell'header TCP
+            lunghezza_header_L4 = utils.calcola_lunghezza_header(payload_hex[inizioL4 * 2 + 24])
+        else:
+            # UDP ha lunghezza fissa (8 byte)
+            lunghezza_header_L4 = 8
+
+        # Dimensione totale degli header IPv4 + TCP/UDP, da qui iniziano i dati.
+        dim_header = inizioL4 + lunghezza_header_L4
 
         # Se il debug e' abilitato, scrive il pacchetto
         # nel file pcap, stampa a video gli indirizzi
@@ -92,7 +97,7 @@ class PacketHandling:
 
             self.log.nt_uplog('-------------')
 
-            # "TCP Packet, x bytes"
+            # "TCP/UDP Packet, x bytes"
             self.log.uplog(pkt)
 
             # Source/Dest IPv4 and ports
@@ -104,16 +109,16 @@ class PacketHandling:
                 self.log.uplog("Source IPv4: " + ipSourceint
                                + "  Destination IPv4: " + ipDestint)
 
-                portaSource = payload[inizioTCP:inizioTCP + 2].hex()
+                portaSource = payload[inizioL4:inizioL4 + 2].hex()
                 portaSourceint = int(portaSource, 16)
-                portaDest = payload[inizioTCP + 2:inizioTCP + 4].hex()
+                portaDest = payload[inizioL4 + 2:inizioL4 + 4].hex()
                 portaDestint = int(portaDest, 16)
                 self.log.uplog("Source port: " + str(portaSourceint)
                                + "  Destination Port: " + str(portaDestint))
             except ValueError:
                 self.log.uplog("Debug: Error while decoding IPv4 or port")
 
-            # TCP Data
+            # TCP/UDP Data
             try:
                 data_received = payload[dim_header:-1].decode('utf-8')
                 self.log.uplog('Data received: ' + data_received)
@@ -123,7 +128,7 @@ class PacketHandling:
             self.log.nt_uplog('-------------')
 
         # Verifica se il pacchetto e' da scartare
-        match = self.shield.is_droppable(payload, dim_header)
+        match = self.shield.is_droppable(payload, True, dim_header)
         if match:
             pkt.drop()
             if self.stats:
@@ -141,12 +146,13 @@ class PacketHandling:
             # Verifico se devo solo droppare il pacchetto (rst_ack == 0);
             # dropparlo e inviare un pacchetto RST (rst_ack == 1) oppure
             # dropparlo e inviare un pacchetto ACK (rst_ack == 2).
-            if self.rst_ack != 0:
+            # La seconda condizione e' per assicurarci che sia un pacchetto TCP
+            if self.rst_ack != 0 and payload_hex[18:20] == '06':
                 # Dal campo Total Length di IPv4
                 total_packet_length = int(payload_hex[4:8], 16)
 
                 [ipSource, ipDest, portaSource, portaDest, newAck, newSeq] = utils.genera_argomenti(
-                    payload_hex, inizioTCP, self.shield, self.rst_ack,
+                    payload_hex, inizioL4, self.shield, self.rst_ack,
                     total_packet_length - dim_header, self.filtering_direction)
 
                 utils.genera_RST(ipSource, ipDest, portaSource, portaDest,

@@ -32,10 +32,10 @@ class Shield:
 
     # Metodo che determina se un pacchetto e' da droppare, in base
     # alla stringa di byte payload ricevuta in input.
-    # Se ignore_TCP_parameters e' settato a True la ricerca ignora
+    # Se ignore_L4_parameters e' settato a True la ricerca ignora
     # i primi dim_header bytes del pacchetto.
-    def is_droppable(self, payload, ignore_TCP_parameters=True, dim_header=52):
-        if (ignore_TCP_parameters):
+    def is_droppable(self, payload, ignore_L4_parameters=True, dim_header=52):
+        if (ignore_L4_parameters):
             payload = payload[dim_header:]
 
         if (self.regex_trigger(payload)):
